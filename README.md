@@ -9,21 +9,22 @@ An open-source audio sampler project based on RaspberryPi.
 [Install](#install)
 ----
 
-0. Check if the required tools are installed (see [Requirements](#requirements) below).
+1. Check if the required tools are installed (see [Requirements](#requirements) below).
 
-1. Run `sudo python setup.py build_ext --inplace` just once.
+2. Run `sudo python setup.py build_ext --inplace` just once.
 
-2. Run the soft with `python samplerbox.py`.
+3. Run the soft with `python samplerbox.py`.
 
-3. Play some notes on the connected MIDI keyboard, you'll hear some sound!  
-  *Important note: it's not going to work with RaspberryPi's built-in soundcard: it will produce bad quality sound, and more annoying: lags/jitter. You do need a DAC such as [this one](http://www.ebay.fr/itm/1Pc-PCM2704-5V-Mini-USB-Alimente-Sound-Carte-DAC-decodeur-Board-pr-ordinateur-PC-/231334667385?pt=LH_DefaultDomain_71&hash=item35dc9ee479) to have normal audio output.*
+4. Play some notes on the connected MIDI keyboard, you'll hear some sound!  
+
+  *Important note: it's not going to work with RaspberryPi's built-in soundcard: it will produce bad sound quality, and more annoying: lags/jitter. You do need a DAC such as [this one](http://www.ebay.fr/itm/1Pc-PCM2704-5V-Mini-USB-Alimente-Sound-Carte-DAC-decodeur-Board-pr-ordinateur-PC-/231334667385?pt=LH_DefaultDomain_71&hash=item35dc9ee479) to have normal audio output.*
 
 *(Optional)*  Modify `samplerbox.py`'s first lines if you want to change root directory for sample-sets, default soundcard, etc.
 
 [Requirements](#requirements)
 ----
 
-You first need a RaspberryPi 2 (untested on RaspberryPi B / B+) and a DAC (i.e. a better soundcard than the built-in one ; it costs around [6€](http://www.ebay.fr/itm/1Pc-PCM2704-5V-Mini-USB-Alimente-Sound-Carte-DAC-decodeur-Board-pr-ordinateur-PC-/231334667385?pt=LH_DefaultDomain_71&hash=item35dc9ee479)).
+You first need a RaspberryPi 2 (untested on RaspberryPi B / B+) and a DAC (i.e. a better soundcard than the built-in one, it costs around [6€](http://www.ebay.fr/itm/1Pc-PCM2704-5V-Mini-USB-Alimente-Sound-Carte-DAC-decodeur-Board-pr-ordinateur-PC-/231334667385?pt=LH_DefaultDomain_71&hash=item35dc9ee479)).
 
 Assuming you are using a Raspbian distribution, you can install the required dependecies this way:
 
@@ -47,15 +48,15 @@ Assuming you are using a Raspbian distribution, you can install the required dep
 [How to use it](#howto)
 ----
 
-##1) How to change preset?
+####1) How to change preset?
 
 Use the buttons you connected to the RaspberryPi's GPIO (as described [here](in www.samplerbox.org/makeit/)) or send a *Program Change* message with your MIDI keyboard.
 
-##2) How to create a new sample-set?
+####2) How to create a new sample-set?
 
 * First create a new folder beginning with a number (in the range 0-127) + a white space. Example: `3 Grand piano/` or `14 Mellow organ/`
 * Put some .WAV files in it. If their name are `%midinote.wav` (example: 36.wav, 37.wav, ..., 60.wav for middle C of the keyboard), there's nothing else to do!
-* *(Optional)* If the naming is more complex, create a sample-set definition file in the folder, like this: `3 Grand piano/3.txt`. More details here.
+* *(Optional)* If the filenames of the .WAV files are more complex, create a *sample-set definition file* in the sample-set folder, like this: `3 Grand piano/3.txt`. More details soon.
 
 
 [About](#about)

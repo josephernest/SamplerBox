@@ -11,7 +11,11 @@ An open-source audio sampler project based on RaspberryPi.
 
 1. Check if the required tools are installed (see [Requirements](#requirements) below).
 
-2. Run `sudo python setup.py build_ext --inplace` just once.
+2. Download SamplerBox and build it with: 
+
+  ~~~
+  git clone https://github.com/josephernest/SamplerBox.git ; cd SamplerBox ; sudo python setup.py build_ext --inplace
+  ~~~
 
 3. Run the soft with `python samplerbox.py`.
 
@@ -31,7 +35,7 @@ Assuming you are using a Raspbian distribution, you can install the required dep
 * Python-related packages and audio libraries:
 
   ~~~
-  sudo apt-get update ; sudo apt-get -y install python-dev cython portaudio19-dev
+  sudo apt-get update ; sudo apt-get -y install python-dev cython python-smbus portaudio19-dev
   ~~~
 
 * RtMidi-python for MIDI input and PyAudio for audio output:
@@ -57,6 +61,14 @@ Use the buttons you connected to the RaspberryPi's GPIO (as described [here](htt
 * First create a new folder beginning with a number (in the range 0-127) + a white space. Example: `3 Grand piano/` or `14 Mellow organ/`
 * Put some .WAV files in it. If their name are `%midinote.wav` (example: 36.wav, 37.wav, ..., 60.wav for middle C of the keyboard), there's nothing else to do!
 * *(Optional)* If the filenames of the .WAV files are more complex, create a *sample-set definition file* in the sample-set folder, like this: `3 Grand piano/3.txt`. More details soon.
+
+<!-- [Advanced usage](#advanced)
+
+####7-segment display via I2C
+
+To use a 7-segment display via I2C, you need to first enable I2C via `raspi-config`, then `8 Advanced options` then `I2C` or by modifying manually `/boot/config.txt`. Then `modprobe i2c-dev`  (or /etc/modules-load.d/raspberry.conf => add: i2c-dev) is still required. (Why?)
+Then `sudo` will be required on `python samplerbox.py` in order that python can write on I2C port.
+-->
 
 
 [About](#about)

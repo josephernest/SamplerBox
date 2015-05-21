@@ -50,7 +50,7 @@ Assuming you are using a Raspbian distribution, you can install the required dep
 
 ####1) How to change preset?
 
-Use the buttons you connected to the RaspberryPi's GPIO (as described [here](in www.samplerbox.org/makeit/)) or send a *Program Change* message with your MIDI keyboard.
+Use the buttons you connected to the RaspberryPi's GPIO (as described [here](http://www.samplerbox.org/makeit/)) or send a *Program Change* message with your MIDI keyboard.
 
 ####2) How to create a new sample-set?
 

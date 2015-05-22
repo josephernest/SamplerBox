@@ -239,6 +239,7 @@ def LoadSamples():
     LoadingThread.daemon = True
     LoadingThread.start()
 
+NOTES = ["c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"]
 
 def ActuallyLoad():    
     global preset
@@ -252,18 +253,27 @@ def ActuallyLoad():
         dirname = os.path.join(SAMPLES_DIR, dirname)
     if not dirname: 
         return
-    definitionfname = os.path.join(dirname, "%d.txt" % preset)
+    definitionfname = os.path.join(dirname, "%d.txt" % preset)                     # parse the sample-set definition file
+    if not os.path.isfile(definitionfname): 
+        definitionfname = os.path.join(dirname, "definition.txt")
     if os.path.isfile(definitionfname):
         with open(definitionfname, 'r') as definitionfile:
-            for line in definitionfile:
-                line = line.replace("%midinote", r"(\d+)").replace("%velocity", r"(\d+)").replace("*", r".*")
+            for pattern in definitionfile:
+                defaultparams = { 'midinote': '0', 'velocity': '127', 'notename': '' }
+                if len(pattern.split(',')) > 1:
+                    defaultparams.update(dict([item.split('=') for item in pattern.split(',', 1)[1].replace(' ','').replace('%', '').split(',')]))
+                pattern = pattern.split(',')[0]
+                pattern = pattern.replace("%midinote", r"(?P<midinote>\d+)").replace("%velocity", r"(?P<velocity>\d+)").replace("%notename", r"(?P<notename>[A-Ga-g]#?[0-9])").replace("*", r".*")
                 for fname in os.listdir(dirname):
                     if LoadingInterrupt: 
                         return
-                    m = re.match(line, fname)
+                    m = re.match(pattern, fname)
                     if m:
-                        midinote = int(m.groups()[0])
-                        velocity = int(m.groups()[1])
+                        info = m.groupdict()
+                        midinote = int(info.get('midinote', defaultparams['midinote']))
+                        velocity = int(info.get('velocity', defaultparams['velocity']))
+                        notename = info.get('notename', defaultparams['notename'])
+                        if notename: midinote = NOTES.index(notename[:-1].lower()) + (int(notename[-1])+2) * 12
                         samples[midinote, velocity] = Sound(os.path.join(dirname, fname), midinote, velocity)
 
     else:

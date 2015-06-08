@@ -417,7 +417,7 @@ if USE_SERIALPORT_MIDI:
 ##  
 #########################################     
 
-preset = 1
+preset = 0
 LoadSamples()
 
 

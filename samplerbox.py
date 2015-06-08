@@ -20,6 +20,7 @@ SAMPLES_DIR = "."                       # The root directory containing the samp
 USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
 USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C 
 USE_BUTTONS = False                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
+MAX_POLYPHONY = 100                     # This can be set higher, but 100 is a good value
 
 
 #########################################
@@ -166,12 +167,14 @@ playingsounds = []
 #########################################
 
 def AudioCallback(in_data, frame_count, time_info, status):
+    global playingsounds
     rmlist = []
     b = samplerbox_audio.mixaudiobuffers(playingsounds, rmlist, frame_count, FADEOUT, FADEOUTLENGTH, SPEED)
     for e in rmlist:
         try: playingsounds.remove(e)
         except: pass
     b /= 8
+    playingsounds = playingsounds[-MAX_POLYPHONY:]
     odata = (b.astype(numpy.int16)).tostring()   
     return (odata, pyaudio.paContinue)
 
@@ -263,7 +266,7 @@ def ActuallyLoad():
                 if len(pattern.split(',')) > 1:
                     defaultparams.update(dict([item.split('=') for item in pattern.split(',', 1)[1].replace(' ','').replace('%', '').split(',')]))
                 pattern = pattern.split(',')[0]
-                pattern = pattern.replace("%midinote", r"(?P<midinote>\d+)").replace("%velocity", r"(?P<velocity>\d+)").replace("%notename", r"(?P<notename>[A-Ga-g]#?[0-9])").replace("*", r".*")
+                pattern = pattern.replace("%midinote", r"(?P<midinote>\d+)").replace("%velocity", r"(?P<velocity>\d+)").replace("%notename", r"(?P<notename>[A-Ga-g]#?[0-9])").replace("*", r".*").strip()
                 for fname in os.listdir(dirname):
                     if LoadingInterrupt: 
                         return
@@ -369,7 +372,7 @@ if USE_I2C_7SEGMENTDISPLAY:
             time.sleep(0.002)
 
     display('----')
-    time.sleep(1)
+    time.sleep(0.5)
 
 else:
 
@@ -414,7 +417,7 @@ if USE_SERIALPORT_MIDI:
 ##  
 #########################################     
 
-preset = 0
+preset = 1
 LoadSamples()
 
 

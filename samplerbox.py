@@ -276,7 +276,7 @@ def ActuallyLoad():
                         midinote = int(info.get('midinote', defaultparams['midinote']))
                         velocity = int(info.get('velocity', defaultparams['velocity']))
                         notename = info.get('notename', defaultparams['notename'])
-                        if notename: midinote = NOTES.index(notename[:-1].lower()) + (int(notename[-1])+2) * 12
+                        if notename: midinote = NOTES.index(notename[:-1].lower()) + (int(notename[-1])) * 12
                         samples[midinote, velocity] = Sound(os.path.join(dirname, fname), midinote, velocity)
 
     else:

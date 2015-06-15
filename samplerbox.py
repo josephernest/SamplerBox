@@ -248,14 +248,17 @@ def ActuallyLoad():
     global preset
     global samples
     global playingsounds
-    display("L%03d" % preset)
     playingsounds = []
     samples = {}    
     dirname = next((f for f in os.listdir(SAMPLES_DIR) if f.startswith("%d " % preset)), None)      # or next(glob.iglob("blah*"), None)
     if dirname:
         dirname = os.path.join(SAMPLES_DIR, dirname)
     if not dirname: 
+        print 'Preset empty: ' + str(preset) 
+        display("E%03d" % preset)
         return
+    print 'Preset loading: ' + str(preset)
+    display("L%03d" % preset)
     definitionfname = os.path.join(dirname, "%d.txt" % preset)                     # parse the sample-set definition file
     if not os.path.isfile(definitionfname): 
         definitionfname = os.path.join(dirname, "definition.txt")
@@ -301,8 +304,12 @@ def ActuallyLoad():
             for velocity in xrange(128): 
                 try: samples[midinote, velocity] = samples[midinote-1, velocity]
                 except: pass
-    print 'Preset loaded: ' + str(preset) 
-    display("%04d" % preset)    
+    if len(initial_keys) > 0:
+      print 'Preset loaded: ' + str(preset) 
+      display("%04d" % preset)    
+    else:
+      print 'Preset empty: ' + str(preset) 
+      display("E%03d" % preset)    
 
 
 

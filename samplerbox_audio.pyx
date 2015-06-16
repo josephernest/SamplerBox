@@ -75,3 +75,12 @@ def mixaudiobuffers(list playingsounds, list rmlist, int frame_count, numpy.ndar
         snd.pos += ii * speed
 
     return b
+
+def binary24_to_int16(char *data):
+    cdef int i
+    res = numpy.zeros(len(data) / 3, numpy.int16)
+    b = <char *>((<numpy.ndarray>res).data)
+    for i in range(len(data) / 3):
+        b[2*i] = data[3*i+1]
+        b[2*i+1] = data[3*i+2]
+    return res

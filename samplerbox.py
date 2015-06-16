@@ -20,7 +20,7 @@ SAMPLES_DIR = "."                       # The root directory containing the samp
 USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
 USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C 
 USE_BUTTONS = False                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
-MAX_POLYPHONY = 100                     # This can be set higher, but 100 is a good value
+MAX_POLYPHONY = 80                      # This can be set higher, but 100 is a good value
 
 
 #########################################
@@ -143,10 +143,7 @@ class Sound:
         if sampwidth == 2:
             npdata = numpy.fromstring(data, dtype = numpy.int16)
         elif sampwidth == 3:
-            temp = numpy.zeros((len(data) / 3, 4), dtype='b')
-            temp[:, 1:] = numpy.frombuffer(data, dtype='b').reshape(-1, 3)
-            temp2 = temp.view('<i4').flatten() >> 16       # >> 16 because I need to divide by 2**16 to load my data into 16-bit array
-            npdata = temp2.astype('int16')
+            npdata = samplerbox_audio.binary24_to_int16(data)
         if numchan == 1: npdata = numpy.repeat(npdata, 2)
         return npdata
 
@@ -161,6 +158,7 @@ playingnotes = {}
 sustainplayingnotes = []
 sustain = False
 playingsounds = []
+globalvolume = 10 ** (-12.0/20)    #  -12dB default global volume
 
 #########################################
 ##  AUDIO AND MIDI CALLBACKS
@@ -169,12 +167,12 @@ playingsounds = []
 def AudioCallback(in_data, frame_count, time_info, status):
     global playingsounds
     rmlist = []
+    playingsounds = playingsounds[-MAX_POLYPHONY:]    
     b = samplerbox_audio.mixaudiobuffers(playingsounds, rmlist, frame_count, FADEOUT, FADEOUTLENGTH, SPEED)
     for e in rmlist:
         try: playingsounds.remove(e)
         except: pass
-    b /= 8
-    playingsounds = playingsounds[-MAX_POLYPHONY:]
+    b *= globalvolume
     odata = (b.astype(numpy.int16)).tostring()   
     return (odata, pyaudio.paContinue)
 
@@ -248,39 +246,47 @@ def ActuallyLoad():
     global preset
     global samples
     global playingsounds
+    global globalvolume
     playingsounds = []
     samples = {}    
     dirname = next((f for f in os.listdir(SAMPLES_DIR) if f.startswith("%d " % preset)), None)      # or next(glob.iglob("blah*"), None)
+    globalvolume = 10 ** (-12.0/20)    #  -12dB default global volume
     if dirname:
         dirname = os.path.join(SAMPLES_DIR, dirname)
     if not dirname: 
-        print 'Preset empty: ' + str(preset) 
+        print 'Preset empty: %s' % preset
         display("E%03d" % preset)
         return
-    print 'Preset loading: ' + str(preset)
+    print 'Preset loading: %s' % preset
     display("L%03d" % preset)
     definitionfname = os.path.join(dirname, "%d.txt" % preset)                     # parse the sample-set definition file
     if not os.path.isfile(definitionfname): 
         definitionfname = os.path.join(dirname, "definition.txt")
     if os.path.isfile(definitionfname):
         with open(definitionfname, 'r') as definitionfile:
-            for pattern in definitionfile:
-                defaultparams = { 'midinote': '0', 'velocity': '127', 'notename': '' }
-                if len(pattern.split(',')) > 1:
-                    defaultparams.update(dict([item.split('=') for item in pattern.split(',', 1)[1].replace(' ','').replace('%', '').split(',')]))
-                pattern = pattern.split(',')[0]
-                pattern = pattern.replace("%midinote", r"(?P<midinote>\d+)").replace("%velocity", r"(?P<velocity>\d+)").replace("%notename", r"(?P<notename>[A-Ga-g]#?[0-9])").replace("*", r".*").strip()
-                for fname in os.listdir(dirname):
-                    if LoadingInterrupt: 
-                        return
-                    m = re.match(pattern, fname)
-                    if m:
-                        info = m.groupdict()
-                        midinote = int(info.get('midinote', defaultparams['midinote']))
-                        velocity = int(info.get('velocity', defaultparams['velocity']))
-                        notename = info.get('notename', defaultparams['notename'])
-                        if notename: midinote = NOTES.index(notename[:-1].lower()) + (int(notename[-1])+2) * 12
-                        samples[midinote, velocity] = Sound(os.path.join(dirname, fname), midinote, velocity)
+            for i, pattern in enumerate(definitionfile):
+                try:
+                    if r'%%volume' in pattern:        # %%paramaters are global parameters
+                        globalvolume *= 10 ** (float(pattern.split('=')[1].strip()) / 20)
+                        continue
+                    defaultparams = { 'midinote': '0', 'velocity': '127', 'notename': '' }
+                    if len(pattern.split(',')) > 1:
+                        defaultparams.update(dict([item.split('=') for item in pattern.split(',', 1)[1].replace(' ','').replace('%', '').split(',')]))
+                    pattern = pattern.split(',')[0]
+                    pattern = pattern.replace("%midinote", r"(?P<midinote>\d+)").replace("%velocity", r"(?P<velocity>\d+)").replace("%notename", r"(?P<notename>[A-Ga-g]#?[0-9])").replace("*", r".*").strip()
+                    for fname in os.listdir(dirname):
+                        if LoadingInterrupt: 
+                            return
+                        m = re.match(pattern, fname)
+                        if m:
+                            info = m.groupdict()
+                            midinote = int(info.get('midinote', defaultparams['midinote']))
+                            velocity = int(info.get('velocity', defaultparams['velocity']))
+                            notename = info.get('notename', defaultparams['notename'])
+                            if notename: midinote = NOTES.index(notename[:-1].lower()) + (int(notename[-1])+2) * 12
+                            samples[midinote, velocity] = Sound(os.path.join(dirname, fname), midinote, velocity)
+                except:
+                    print "Error in definition file, skipping line %s." % (i+1)
 
     else:
         for midinote in range(0, 127): 

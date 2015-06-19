@@ -325,9 +325,19 @@ def ActuallyLoad():
 #########################################
 
 p = pyaudio.PyAudio()
-stream = p.open(format = pyaudio.paInt16, channels = 2, rate = 44100, frames_per_buffer = 512, output = True, input = False, output_device_index = AUDIO_DEVICE_ID, stream_callback = AudioCallback)
-print 'Opened audio: '+ p.get_device_info_by_index(AUDIO_DEVICE_ID)['name']
-
+try:
+    stream = p.open(format = pyaudio.paInt16, channels = 2, rate = 44100, frames_per_buffer = 512, output = True, input = False, output_device_index = AUDIO_DEVICE_ID, stream_callback = AudioCallback)
+    print 'Opened audio: '+ p.get_device_info_by_index(AUDIO_DEVICE_ID)['name']
+except:
+    print "Invalid Audio Device ID: " + str(AUDIO_DEVICE_ID)
+    print " "
+    print "Here is a list of audio devices:"
+    for i in range(p.get_device_count()):
+        dev = p.get_device_info_by_index(i)
+        # Remove input device (not really useful on a Raspberry Pi)
+        if dev['maxOutputChannels'] > 0:
+            print str(i) + " -- " + dev['name']
+    exit(1)
 
 
 #########################################

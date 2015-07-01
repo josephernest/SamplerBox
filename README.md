@@ -15,7 +15,7 @@ You need a RaspberryPi and a DAC (such as [this 6€ one](http://www.ebay.fr/itm
 1. Install the required dependencies (Python-related packages and audio libraries):
 
   ~~~
-  sudo apt-get update ; sudo apt-get -y install python-dev cython python-smbus portaudio19-dev
+  sudo apt-get update ; sudo apt-get -y install python-dev python-numpy cython python-smbus portaudio19-dev
   git clone https://github.com/superquadratic/rtmidi-python.git ; cd rtmidi-python ; sudo python setup.py install ; cd .. 
   git clone http://people.csail.mit.edu/hubert/git/pyaudio.git ; cd pyaudio ; sudo python setup.py install ; cd ..
   ~~~

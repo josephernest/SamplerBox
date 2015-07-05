@@ -20,7 +20,7 @@ USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via Seri
 USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C
 USE_BUTTONS = False                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
 MAX_POLYPHONY = 80                      # This can be set higher, but 80 is a safe value
-
+USE_SYSTEMLED = True
 
 #########################################
 # IMPORT
@@ -472,6 +472,13 @@ if USE_SERIALPORT_MIDI:
 preset = 0
 LoadSamples()
 
+#########################################
+# System Led
+#
+#########################################
+if USE_SYSTEMLED:
+    os.system("modprobe ledtrig_heartbeat")
+    os.system("echo heartbeat >/sys/class/leds/led0/trigger")
 
 #########################################
 # MIDI DEVICES DETECTION

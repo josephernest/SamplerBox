@@ -10,17 +10,22 @@
 
 
 #########################################
-# LOCAL
 # CONFIG
 #########################################
 
 AUDIO_DEVICE_ID = 2                     # change this number to use another soundcard
-SAMPLES_DIR = "/media/pi/Transcend"                       # The root directory containing the sample-sets. Example: "/media/" to look for samples on a USB stick / SD card
+SAMPLES_DIR = "."                       # The root directory containing the sample-sets. Example: "/media/" to look for samples on a USB stick / SD card
 USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
 USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C
 USE_BUTTONS = True                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
 MAX_POLYPHONY = 80                      # This can be set higher, but 80 is a safe value
+LOCAL_CONFIG = 'local_config.py'	# Local config filename
+DEBUG = False                           # Enable to switch verbose logging on
 
+# Load local config if available
+import os.path
+if os.path.isfile(LOCAL_CONFIG):
+    execfile(LOCAL_CONFIG)
 
 #########################################
 # IMPORT
@@ -145,6 +150,8 @@ class Sound:
         actual_velocity = 1-globalvelocitysensitivity + (globalvelocitysensitivity * (velocity/127.0))
         if actual_velocity > 1:
             actual_velocity = 1 # safety check for out-of-bounds input velocity or sensitivity
+        if DEBUG:
+	    print 'MIDI vel %d actual vel %f' % (velocity, actual_velocity)
         snd = PlayingSound(self, note, actual_velocity)
         playingsounds.append(snd)
         return snd

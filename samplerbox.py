@@ -15,10 +15,10 @@
 #########################################
 
 AUDIO_DEVICE_ID = 2                     # change this number to use another soundcard
-SAMPLES_DIR = "."                       # The root directory containing the sample-sets. Example: "/media/" to look for samples on a USB stick / SD card
+SAMPLES_DIR = "/media/pi/Transcend"                       # The root directory containing the sample-sets. Example: "/media/" to look for samples on a USB stick / SD card
 USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
 USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C
-USE_BUTTONS = False                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
+USE_BUTTONS = True                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
 MAX_POLYPHONY = 80                      # This can be set higher, but 80 is a safe value
 
 
@@ -105,12 +105,13 @@ class waveread(wave.Wave_read):
 
 class PlayingSound:
 
-    def __init__(self, sound, note):
+    def __init__(self, sound, note, velocity):
         self.sound = sound
         self.pos = 0
         self.fadeoutpos = 0
         self.isfadeout = False
         self.note = note
+        self.velocity = velocity
 
     def fadeout(self, i):
         self.isfadeout = True
@@ -140,8 +141,11 @@ class Sound:
 
         wf.close()
 
-    def play(self, note):
-        snd = PlayingSound(self, note)
+    def play(self, note, velocity):
+        actual_velocity = 1-globalvelocitysensitivity + (globalvelocitysensitivity * (velocity/127.0))
+        if actual_velocity > 1:
+            actual_velocity = 1 # safety check for out-of-bounds input velocity or sensitivity
+        snd = PlayingSound(self, note, actual_velocity)
         playingsounds.append(snd)
         return snd
 
@@ -204,7 +208,7 @@ def MidiCallback(message, time_stamp):
     if messagetype == 9:    # Note on
         midinote += globaltranspose
         try:
-            playingnotes.setdefault(midinote, []).append(samples[midinote, velocity].play(midinote))
+            playingnotes.setdefault(midinote, []).append(samples[midinote, velocity].play(midinote, velocity))
         except:
             pass
 
@@ -264,10 +268,12 @@ def ActuallyLoad():
     global samples
     global playingsounds
     global globalvolume, globaltranspose
+    global globalvelocitysensitivity
     playingsounds = []
     samples = {}
     globalvolume = 10 ** (-12.0/20)  # -12dB default global volume
     globaltranspose = 0
+    globalvelocitysensitivity = 0 # default midi velocity sensitivity 
 
     basename = next((f for f in os.listdir(SAMPLES_DIR) if f.startswith("%d " % preset)), None)      # or next(glob.iglob("blah*"), None)
     if basename:
@@ -289,6 +295,9 @@ def ActuallyLoad():
                         continue
                     if r'%%transpose' in pattern:
                         globaltranspose = int(pattern.split('=')[1].strip())
+                        continue
+                    if r'%%velocitysensitivity' in pattern:
+                        globalvelocitysensitivity = float(pattern.split('=')[1].strip())
                         continue
                     defaultparams = {'midinote': '0', 'velocity': '127', 'notename': ''}
                     if len(pattern.split(',')) > 1:

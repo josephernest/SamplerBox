@@ -24,7 +24,7 @@ You need a RaspberryPi and a DAC (such as [this 6€ one](http://www.ebay.fr/itm
 
   ~~~
   git clone https://github.com/josephernest/SamplerBox.git ;
-  cd SamplerBox ; sudo python setup.py build_ext --inplace
+  cd SamplerBox ; make 
   ~~~
 
 3. Run the soft with `python samplerbox.py`.

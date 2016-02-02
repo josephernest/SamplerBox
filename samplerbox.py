@@ -363,7 +363,7 @@ def ActuallyLoad():
 
 p = pyaudio.PyAudio()
 try:
-    stream = p.open(format=pyaudio.paInt16, channels=2, rate=44100, frames_per_buffer=256, output=True,
+    stream = p.open(format=pyaudio.paInt16, channels=2, rate=44100, frames_per_buffer=512, output=True,
                     input=False, output_device_index=AUDIO_DEVICE_ID, stream_callback=AudioCallback)
     print 'Opened audio: ' + p.get_device_info_by_index(AUDIO_DEVICE_ID)['name']
 except:

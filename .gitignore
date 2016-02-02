@@ -1,4 +1,4 @@
 build/
-samplerbox_audio.c
-samplerbox_audio.so
+*.c
+*.so
 local_config.*

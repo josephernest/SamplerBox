@@ -18,7 +18,7 @@ SAMPLES_DIR = "."                       # The root directory containing the samp
 USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
 USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C
 USE_BUTTONS = False                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
-MAX_POLYPHONY = 50                      # This can be set higher, but 80 is a safe value
+MAX_POLYPHONY = 80                      # This can be set higher, but 80 is a safe value
 LOCAL_CONFIG = 'local_config.py'	# Local config filename
 DEBUG = False                           # Enable to switch verbose logging on
 
@@ -42,8 +42,8 @@ import threading
 from chunk import Chunk
 import struct
 import rtmidi_python as rtmidi
-import samplerbox_audio
-
+#import samplerbox_audio                         # legacy audio (pre RPi-2 models)
+import samplerbox_audio_neon as samplerbox_audio # ARM NEON instruction set
 
 #########################################
 # SLIGHT MODIFICATION OF PYTHON'S WAVE MODULE
@@ -191,7 +191,8 @@ def AudioCallback(in_data, frame_count, time_info, status):
             playingsounds.remove(e)
         except:
             pass
-    odata = (b.astype(numpy.int16)).tostring()
+#    odata = (b.astype(numpy.int16)).tostring()
+    odata = b.tostring()
     return (odata, pyaudio.paContinue)
 
 

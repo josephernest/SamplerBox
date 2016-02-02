@@ -18,7 +18,7 @@ SAMPLES_DIR = "."                       # The root directory containing the samp
 USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
 USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C
 USE_BUTTONS = False                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
-MAX_POLYPHONY = 80                      # This can be set higher, but 80 is a safe value
+MAX_POLYPHONY = 50                      # This can be set higher, but 80 is a safe value
 LOCAL_CONFIG = 'local_config.py'	# Local config filename
 DEBUG = False                           # Enable to switch verbose logging on
 
@@ -185,13 +185,12 @@ def AudioCallback(in_data, frame_count, time_info, status):
     global playingsounds
     rmlist = []
     playingsounds = playingsounds[-MAX_POLYPHONY:]
-    b = samplerbox_audio.mixaudiobuffers(playingsounds, rmlist, frame_count, FADEOUT, FADEOUTLENGTH, SPEED)
+    b = samplerbox_audio.mixaudiobuffers(playingsounds, rmlist, frame_count, FADEOUT, FADEOUTLENGTH, SPEED, globalvolume)
     for e in rmlist:
         try:
             playingsounds.remove(e)
         except:
             pass
-    b *= globalvolume
     odata = (b.astype(numpy.int16)).tostring()
     return (odata, pyaudio.paContinue)
 
@@ -364,7 +363,7 @@ def ActuallyLoad():
 
 p = pyaudio.PyAudio()
 try:
-    stream = p.open(format=pyaudio.paInt16, channels=2, rate=44100, frames_per_buffer=512, output=True,
+    stream = p.open(format=pyaudio.paInt16, channels=2, rate=44100, frames_per_buffer=256, output=True,
                     input=False, output_device_index=AUDIO_DEVICE_ID, stream_callback=AudioCallback)
     print 'Opened audio: ' + p.get_device_info_by_index(AUDIO_DEVICE_ID)['name']
 except:

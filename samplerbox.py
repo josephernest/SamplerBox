@@ -18,6 +18,7 @@ AUDIO_DEVICE_ID = 2                     # change this number to use another soun
 SAMPLES_DIR = "."                       # The root directory containing the sample-sets. Example: "/media/" to look for samples on a USB stick / SD card
 USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
 USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C
+USE_HD44780DISPLAY = False		# Set to True to use HD44780 display
 USE_BUTTONS = False                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
 MAX_POLYPHONY = 80                      # This can be set higher, but 80 is a safe value
 
@@ -274,10 +275,10 @@ def ActuallyLoad():
         dirname = os.path.join(SAMPLES_DIR, basename)
     if not basename:
         print 'Preset empty: %s' % preset
-        display("E%03d" % preset)
+        display("E%03d" % preset, [str(preset), 'EMPTY'])
         return
     print 'Preset loading: %s (%s)' % (preset, basename)
-    display("L%03d" % preset)
+    display("L%03d" % preset, [basename, 'Loading'])
 
     definitionfname = os.path.join(dirname, "definition.txt")
     if os.path.isfile(definitionfname):
@@ -339,10 +340,10 @@ def ActuallyLoad():
                     pass
     if len(initial_keys) > 0:
         print 'Preset loaded: ' + str(preset)
-        display("%04d" % preset)
+        display("%04d" % preset, [basename, 'Ready'])
     else:
         print 'Preset empty: ' + str(preset)
-        display("E%03d" % preset)
+        display("E%03d" % preset, [str(preset), 'EMPTY'])
 
 
 #########################################
@@ -414,7 +415,7 @@ if USE_I2C_7SEGMENTDISPLAY:
 
     bus = smbus.SMBus(1)     # using I2C
 
-    def display(s):
+    def display(s, lines):
         for k in '\x76\x79\x00' + s:     # position cursor at 0
             try:
                 bus.write_byte(0x71, ord(k))
@@ -427,6 +428,14 @@ if USE_I2C_7SEGMENTDISPLAY:
 
     display('----')
     time.sleep(0.5)
+
+if USE_HD44780DISPLAY:
+    execfile('peripherals/hd44780.py')
+    lcd_init()
+
+    def display(s, lines):
+        lcd_string(lines[0], LCD_LINE_1)
+        lcd_string(lines[1], LCD_LINE_2)
 
 else:
 

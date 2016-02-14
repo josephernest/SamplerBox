@@ -21,12 +21,12 @@ import RPi.GPIO as GPIO
 import time
 
 # Define GPIO to LCD mapping
-LCD_RS = 7
-LCD_E  = 11
-LCD_D4 = 37
-LCD_D5 = 35
-LCD_D6 = 33
-LCD_D7 = 31
+LCD_RS = 4
+LCD_E  = 17
+LCD_D4 = 5
+LCD_D5 = 6
+LCD_D6 = 13
+LCD_D7 = 26
 
 
 # Define some device constants
@@ -42,7 +42,7 @@ E_PULSE = 0.0005
 E_DELAY = 0.0005
 
 GPIO.setwarnings(True)
-GPIO.setmode(GPIO.BOARD)       # Use BCM GPIO numbers
+GPIO.setmode(GPIO.BCM)       # Use BCM GPIO numbers
 GPIO.setup(LCD_E, GPIO.OUT)  # E
 GPIO.setup(LCD_RS, GPIO.OUT) # RS
 GPIO.setup(LCD_D4, GPIO.OUT) # DB4

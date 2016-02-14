@@ -42,8 +42,8 @@ import threading
 from chunk import Chunk
 import struct
 import rtmidi_python as rtmidi
-#import samplerbox_audio                         # legacy audio (pre RPi-2 models)
-import samplerbox_audio_neon as samplerbox_audio # ARM NEON instruction set
+import samplerbox_audio                         # legacy audio (pre RPi-2 models)
+#import samplerbox_audio_neon as samplerbox_audio # ARM NEON instruction set
 
 #########################################
 # SLIGHT MODIFICATION OF PYTHON'S WAVE MODULE
@@ -390,19 +390,19 @@ if USE_BUTTONS:
 
     def Buttons():
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         global preset, lastbuttontime
         while True:
             now = time.time()
-            if not GPIO.input(18) and (now - lastbuttontime) > 0.2:
+            if not GPIO.input(23) and (now - lastbuttontime) > 0.2:
                 lastbuttontime = now
                 preset -= 1
                 if preset < 0:
                     preset = 127
                 LoadSamples()
 
-            elif not GPIO.input(17) and (now - lastbuttontime) > 0.2:
+            elif not GPIO.input(24) and (now - lastbuttontime) > 0.2:
                 lastbuttontime = now
                 preset += 1
                 if preset > 127:

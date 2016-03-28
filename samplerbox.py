@@ -232,6 +232,14 @@ def MidiCallback(message, time_stamp):
     elif (messagetype == 11) and (note == 64) and (velocity >= 64):  # sustain pedal on
         sustain = True
 
+    elif (messagetype == 11) and (note == 123):  # all notes off
+        for i in playingnotes:
+            for n in playingnotes[i]:
+                if sustain:
+                    sustainplayingnotes.append(n)
+                else:
+                    n.fadeout(50)
+            playingnotes[i] = []
 
 #########################################
 # LOAD SAMPLES

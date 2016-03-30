@@ -334,7 +334,7 @@ def ActuallyLoad():
     if os.path.isfile(configfname):
         with open(configfname, 'r') as configfile:
             for i, pattern in enumerate(configfile):
-                if r'melodicProgram=false' in pattern:
+                if r'melodic=false' in pattern:
                     melodicProgram = False
                                    
 

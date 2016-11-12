@@ -32,7 +32,7 @@ import time
 import numpy
 import os
 import re
-import pyaudio
+import sounddevice
 import threading
 from chunk import Chunk
 import struct
@@ -174,7 +174,7 @@ globaltranspose = 0
 #
 #########################################
 
-def AudioCallback(in_data, frame_count, time_info, status):
+def AudioCallback(outdata, frame_count, time_info, status):
     global playingsounds
     rmlist = []
     playingsounds = playingsounds[-MAX_POLYPHONY:]
@@ -185,9 +185,7 @@ def AudioCallback(in_data, frame_count, time_info, status):
         except:
             pass
     b *= globalvolume
-    odata = (b.astype(numpy.int16)).tostring()
-    return (odata, pyaudio.paContinue)
-
+    outdata[:] = b.reshape(outdata.shape)
 
 def MidiCallback(message, time_stamp):
     global playingnotes, sustain, sustainplayingnotes
@@ -269,9 +267,11 @@ def ActuallyLoad():
     globalvolume = 10 ** (-12.0/20)  # -12dB default global volume
     globaltranspose = 0
 
-    basename = next((f for f in os.listdir(SAMPLES_DIR) if f.startswith("%d " % preset)), None)      # or next(glob.iglob("blah*"), None)
+    samplesdir = SAMPLES_DIR if os.listdir(SAMPLES_DIR) else '.'      # use current folder (containing 0 Saw) if no user media containing samples has been found
+
+    basename = next((f for f in os.listdir(samplesdir) if f.startswith("%d " % preset)), None)      # or next(glob.iglob("blah*"), None)
     if basename:
-        dirname = os.path.join(SAMPLES_DIR, basename)
+        dirname = os.path.join(samplesdir, basename)
     if not basename:
         print 'Preset empty: %s' % preset
         display("E%03d" % preset)
@@ -350,19 +350,12 @@ def ActuallyLoad():
 #
 #########################################
 
-p = pyaudio.PyAudio()
 try:
-    stream = p.open(format=pyaudio.paInt16, channels=2, rate=44100, frames_per_buffer=512, output=True,
-                    input=False, output_device_index=AUDIO_DEVICE_ID, stream_callback=AudioCallback)
-    print 'Opened audio: ' + p.get_device_info_by_index(AUDIO_DEVICE_ID)['name']
+    sd = sounddevice.OutputStream(device=AUDIO_DEVICE_ID, blocksize=512, samplerate=44100, channels=2, dtype='int16', callback=AudioCallback)
+    sd.start()
+    print 'Opened audio device #%i' % AUDIO_DEVICE_ID
 except:
-    print "Invalid Audio Device ID: " + str(AUDIO_DEVICE_ID)
-    print "Here is a list of audio devices:"
-    for i in range(p.get_device_count()):
-        dev = p.get_device_info_by_index(i)
-        # Remove input device (not really useful on a Raspberry Pi)
-        if dev['maxOutputChannels'] > 0:
-            print str(i) + " -- " + dev['name']
+    print 'Invalid audio device #%i' % AUDIO_DEVICE_ID
     exit(1)
 
 

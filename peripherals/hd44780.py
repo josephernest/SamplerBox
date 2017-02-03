@@ -21,21 +21,21 @@ import RPi.GPIO as GPIO
 import time
 
 # Define GPIO to LCD mapping
-LCD_RS = 4
-LCD_E  = 17
-LCD_D4 = 5
-LCD_D5 = 6
-LCD_D6 = 13
-LCD_D7 = 26
+LCD_RS = 25
+LCD_E  = 24
+LCD_D4 = 23
+LCD_D5 = 22
+LCD_D6 = 27
+LCD_D7 = 17
 
 
 # Define some device constants
-LCD_WIDTH = 8    # Maximum characters per line
+LCD_WIDTH = 16    # Maximum characters per line
 LCD_CHR = True
 LCD_CMD = False
 
-LCD_LINE_1 = 0x80 # LCD RAM address for the 1st line
-LCD_LINE_2 = 0xC0 # LCD RAM address for the 2nd line
+LCD_LINE_1 = 0x00 # LCD RAM address for the 1st line
+LCD_LINE_2 = 0x40 # LCD RAM address for the 2nd line
 
 # Timing constants
 E_PULSE = 0.0005
@@ -60,6 +60,7 @@ def lcd_init():
   lcd_byte(0x0C,LCD_CMD) # 001100 Display On,Cursor Off, Blink Off
   lcd_byte(0x28,LCD_CMD) # 101000 Data length, number of lines, font size
   lcd_byte(0x01,LCD_CMD) # 000001 Clear display
+
   time.sleep(E_DELAY)
 
 def lcd_byte(bits, mode):

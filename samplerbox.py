@@ -365,7 +365,7 @@ def ActuallyLoad():
 
 p = pyaudio.PyAudio()
 try:
-    stream = p.open(format=pyaudio.paInt16, channels=2, rate=44100, frames_per_buffer=512, output=True,
+    stream = p.open(format=pyaudio.paInt16, channels=2, rate=48000, frames_per_buffer=512, output=True,
                     input=False, output_device_index=AUDIO_DEVICE_ID, stream_callback=AudioCallback)
     print 'Opened audio: ' + p.get_device_info_by_index(AUDIO_DEVICE_ID)['name']
 except:
@@ -391,19 +391,19 @@ if USE_BUTTONS:
 
     def Buttons():
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(23, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(24, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         global preset, lastbuttontime
         while True:
             now = time.time()
-            if not GPIO.input(23) and (now - lastbuttontime) > 0.2:
+            if not GPIO.input(26) and (now - lastbuttontime) > 0.2:
                 lastbuttontime = now
                 preset -= 1
                 if preset < 0:
                     preset = 127
                 LoadSamples()
 
-            elif not GPIO.input(24) and (now - lastbuttontime) > 0.2:
+            elif not GPIO.input(16) and (now - lastbuttontime) > 0.2:
                 lastbuttontime = now
                 preset += 1
                 if preset > 127:
@@ -451,7 +451,7 @@ if USE_HD44780DISPLAY:
 
 else:
 
-    def display(s):
+    def display(s, l):
         pass
 
 
@@ -471,6 +471,7 @@ if USE_SERIALPORT_MIDI:
             i = 0
             while i < 3:
                 data = ord(ser.read(1))  # read a byte
+                print data
                 if data >> 7 != 0:
                     i = 0      # status byte!   this is the beginning of a midi message: http://www.midi.org/techspecs/midimessages.php
                 message[i] = data

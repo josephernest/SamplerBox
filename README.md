@@ -10,14 +10,13 @@ Website: www.samplerbox.org
 [Install](#install)
 ----
 
-You need a RaspberryPi and a DAC (such as [this 6€ one](http://www.ebay.fr/itm/1Pc-PCM2704-5V-Mini-USB-Alimente-Sound-Carte-DAC-decodeur-Board-pr-ordinateur-PC-/231334667385?pt=LH_DefaultDomain_71&hash=item35dc9ee479) that provides really high-quality sound – please note that without any DAC, the RaspberryPi's built-in soundcard would produce bad sound quality and lag).
+SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (such as [this 6€ one](http://www.ebay.fr/itm/1Pc-PCM2704-5V-Mini-USB-Alimente-Sound-Carte-DAC-decodeur-Board-pr-ordinateur-PC-/231334667385?pt=LH_DefaultDomain_71&hash=item35dc9ee479)) for better sound quality.
 
 1. Install the required dependencies (Python-related packages and audio libraries):
 
   ~~~
-  sudo apt-get update ; sudo apt-get -y install python-dev python-numpy cython python-smbus portaudio19-dev
-  git clone https://github.com/superquadratic/rtmidi-python.git ; cd rtmidi-python ; sudo python setup.py install ; cd .. 
-  git clone http://people.csail.mit.edu/hubert/git/pyaudio.git ; cd pyaudio ; sudo python setup.py install ; cd ..
+  sudo apt-get update ; sudo apt-get -y install git python-dev python-pip python-numpy cython python-smbus portaudio19-dev libportaudio2 libffi-dev
+  sudo pip install rtmidi-python pyaudio cffi sounddevice
   ~~~
 
 2. Download SamplerBox and build it with: 
@@ -25,7 +24,6 @@ You need a RaspberryPi and a DAC (such as [this 6€ one](http://www.ebay.fr/itm
   ~~~
   git clone https://github.com/josephernest/SamplerBox.git ;
   cd SamplerBox ; make 
-  ~~~
 
 3. Run the soft with `python samplerbox.py`.
 
@@ -33,12 +31,17 @@ You need a RaspberryPi and a DAC (such as [this 6€ one](http://www.ebay.fr/itm
 
 *(Optional)*  Modify `samplerbox.py`'s first lines if you want to change root directory for sample-sets, default soundcard, etc.
 
-<!--  *Note:* Don't install `pyaudio` with `apt-get install python-pyaudio` since this would install version 0.2.4, that wouldn't work for this project. Version 0.2.8 or higher is required. -->
 
 [How to use it](#howto)
 ----
 
 See the [FAQ](http://www.samplerbox.org/faq) on www.samplerbox.org.
+
+
+[ISO image](#isoimage)
+----
+
+The ready-to-use ISO images available on [www.samplerbox.org](http://www.samplerbox.org) are built with the help of a script that can be found in `isoimage/samplerbox_iso_maker.sh`.
 
 
 [About](#about)

@@ -34,8 +34,8 @@ LCD_WIDTH = 16    # Maximum characters per line
 LCD_CHR = True
 LCD_CMD = False
 
-LCD_LINE_1 = 0x00 # LCD RAM address for the 1st line
-LCD_LINE_2 = 0x40 # LCD RAM address for the 2nd line
+LCD_LINE_1 = 0x80 # LCD RAM address for the 1st line
+LCD_LINE_2 = 0xC0 # LCD RAM address for the 2nd line
 
 # Timing constants
 E_PULSE = 0.0005

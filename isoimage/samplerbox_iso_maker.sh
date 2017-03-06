@@ -113,7 +113,7 @@ chroot sdcard apt-get clean
 chroot sdcard apt-get -y install build-essential python-dev python-pip cython python-smbus python-numpy python-rpi.gpio python-serial portaudio19-dev alsa-utils git libportaudio2 libffi-dev
 chroot sdcard apt-get clean
 chroot sdcard apt-get autoremove -y
-chroot sdcard pip install rtmidi-python pyaudio cffi sounddevice
+chroot sdcard pip install rtmidi-python cffi sounddevice
 
 # Allowing root to log into $release with password... "
 sed -i 's/PermitRootLogin without-password/PermitRootLogin yes/' sdcard/etc/ssh/sshd_config

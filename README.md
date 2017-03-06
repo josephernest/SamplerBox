@@ -16,7 +16,7 @@ SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommende
 
   ~~~
   sudo apt-get update ; sudo apt-get -y install git python-dev python-pip python-numpy cython python-smbus portaudio19-dev libportaudio2 libffi-dev
-  sudo pip install rtmidi-python pyaudio cffi sounddevice
+  sudo pip install rtmidi-python cffi sounddevice
   ~~~
 
 2. Download SamplerBox and build it with: 

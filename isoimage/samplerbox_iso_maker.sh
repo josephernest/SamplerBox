@@ -110,7 +110,7 @@ chroot sdcard apt-get -y upgrade
 chroot sdcard apt-get -y dist-upgrade
 chroot sdcard apt-get -y install libraspberrypi-bin libraspberrypi-dev libraspberrypi0 raspberrypi-bootloader ssh wireless-tools wpasupplicant usbutils
 chroot sdcard apt-get clean
-chroot sdcard apt-get -y install build-essential python-dev python-pip cython python-smbus python-numpy python-rpi.gpio python-serial portaudio19-dev alsa-utils git libportaudio2 libffi-dev
+chroot sdcard apt-get -y install build-essential python-dev python-pip cython python-smbus python-numpy python-rpi.gpio python-serial alsa-utils git libportaudio2 libffi-dev
 chroot sdcard apt-get clean
 chroot sdcard apt-get autoremove -y
 chroot sdcard pip install rtmidi-python cffi sounddevice

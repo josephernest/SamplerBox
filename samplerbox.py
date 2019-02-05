@@ -54,10 +54,10 @@ class waveread(wave.Wave_read):
         self._loops = []
         self._ieee = False
         self._file = Chunk(file, bigendian=0)
-        if self._file.getname() != 'RIFF':
-            raise Error, 'file does not start with RIFF id'
-        if self._file.read(4) != 'WAVE':
-            raise Error, 'not a WAVE file'
+        if self._file.getname() != b'RIFF':
+            print('file does not start with RIFF id')
+        if self._file.read(4) != b'WAVE':
+            print('not a WAVE file')
         self._fmt_chunk_read = 0
         self._data_chunk = None
         while 1:
@@ -67,21 +67,21 @@ class waveread(wave.Wave_read):
             except EOFError:
                 break
             chunkname = chunk.getname()
-            if chunkname == 'fmt ':
+            if chunkname == b'fmt ':
                 self._read_fmt_chunk(chunk)
                 self._fmt_chunk_read = 1
-            elif chunkname == 'data':
+            elif chunkname == b'data':
                 if not self._fmt_chunk_read:
-                    raise Error, 'data chunk before fmt chunk'
+                    print('data chunk before fmt chunk')
                 self._data_chunk = chunk
                 self._nframes = chunk.chunksize // self._framesize
                 self._data_seek_needed = 0
-            elif chunkname == 'cue ':
+            elif chunkname == b'cue ':
                 numcue = struct.unpack('<i', chunk.read(4))[0]
                 for i in range(numcue):
                     id, position, datachunkid, chunkstart, blockstart, sampleoffset = struct.unpack('<iiiiii', chunk.read(24))
                     self._cue.append(sampleoffset)
-            elif chunkname == 'smpl':
+            elif chunkname == b'smpl':
                 manuf, prod, sampleperiod, midiunitynote, midipitchfraction, smptefmt, smpteoffs, numsampleloops, samplerdata = struct.unpack(
                     '<iiiiiiiii', chunk.read(36))
                 for i in range(numsampleloops):
@@ -89,7 +89,7 @@ class waveread(wave.Wave_read):
                     self._loops.append([start, end])
             chunk.skip()
         if not self._fmt_chunk_read or not self._data_chunk:
-            raise Error, 'fmt chunk and/or data chunk missing'
+            print('fmt chunk and/or data chunk missing')
 
     def getmarkers(self):
         return self._cue
@@ -217,7 +217,7 @@ def MidiCallback(message, time_stamp):
             playingnotes[midinote] = []
 
     elif messagetype == 12:  # Program change
-        print 'Program change ' + str(note)
+        print('Program change ' + str(note))
         preset = note
         LoadSamples()
 
@@ -273,10 +273,10 @@ def ActuallyLoad():
     if basename:
         dirname = os.path.join(samplesdir, basename)
     if not basename:
-        print 'Preset empty: %s' % preset
+        print('Preset empty: %s' % preset)
         display("E%03d" % preset)
         return
-    print 'Preset loading: %s (%s)' % (preset, basename)
+    print('Preset loading: %s (%s)' % (preset, basename))
     display("L%03d" % preset)
 
     definitionfname = os.path.join(dirname, "definition.txt")
@@ -310,7 +310,7 @@ def ActuallyLoad():
                                 midinote = NOTES.index(notename[:-1].lower()) + (int(notename[-1])+2) * 12
                             samples[midinote, velocity] = Sound(os.path.join(dirname, fname), midinote, velocity)
                 except:
-                    print "Error in definition file, skipping line %s." % (i+1)
+                    print("Error in definition file, skipping line %s." % (i+1))
 
     else:
         for midinote in range(0, 127):
@@ -338,10 +338,10 @@ def ActuallyLoad():
                 except:
                     pass
     if len(initial_keys) > 0:
-        print 'Preset loaded: ' + str(preset)
+        print('Preset loaded: ' + str(preset))
         display("%04d" % preset)
     else:
-        print 'Preset empty: ' + str(preset)
+        print('Preset empty: ' + str(preset))
         display("E%03d" % preset)
 
 
@@ -353,9 +353,9 @@ def ActuallyLoad():
 try:
     sd = sounddevice.OutputStream(device=AUDIO_DEVICE_ID, blocksize=512, samplerate=44100, channels=2, dtype='int16', callback=AudioCallback)
     sd.start()
-    print 'Opened audio device #%i' % AUDIO_DEVICE_ID
+    print('Opened audio device #%i' % AUDIO_DEVICE_ID)
 except:
-    print 'Invalid audio device #%i' % AUDIO_DEVICE_ID
+    print('Invalid audio device #%i' % AUDIO_DEVICE_ID)
     exit(1)
 
 
@@ -471,14 +471,14 @@ LoadSamples()
 # MAIN LOOP
 #########################################
 
-midi_in = [rtmidi.MidiIn()]
+midi_in = [rtmidi.MidiIn(b'in')]
 previous = []
 while True:
     for port in midi_in[0].ports:
-        if port not in previous and 'Midi Through' not in port:
-            midi_in.append(rtmidi.MidiIn())
+        if port not in previous and b'Midi Through' not in port:
+            midi_in.append(rtmidi.MidiIn(b'in'))
             midi_in[-1].callback = MidiCallback
             midi_in[-1].open_port(port)
-            print 'Opened MIDI: ' + port
+            print('Opened MIDI: ' + str(port))
     previous = midi_in[0].ports
     time.sleep(2)

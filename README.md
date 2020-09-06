@@ -1,3 +1,5 @@
+Updated for python3 ...
+
 SamplerBox
 ==========
 

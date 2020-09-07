@@ -24,7 +24,7 @@ SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommende
 2. Download SamplerBox and build it with: 
 
   ~~~
-  git clone https://github.com/josephernest/SamplerBox.git
+  git clone https://github.com/devegoo/SamplerBox.git
   cd SamplerBox ; sudo python3 setup.py build_ext --inplace
   ~~~
 

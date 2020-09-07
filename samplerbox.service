@@ -7,8 +7,8 @@ DefaultDependencies=false            # Very important! Without this line, the se
 
 [Service]
 Type=simple
-ExecStart=/home/ts/SamplerBox/samplerbox.sh
-WorkingDirectory=/home/ts/SamplerBox/
+ExecStart=/root/SamplerBox/samplerbox.sh
+WorkingDirectory=/root/SamplerBox/
 
 [Install]
 WantedBy=local-fs.target

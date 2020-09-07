@@ -38,7 +38,7 @@ from chunk import Chunk
 import struct
 import rtmidi_python as rtmidi
 import samplerbox_audio
-
+from past.builtins import xrange
 
 #########################################
 # SLIGHT MODIFICATION OF PYTHON'S WAVE MODULE

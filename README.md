@@ -1,5 +1,20 @@
 Updated for python3 ...
 
+tested on Ubuntu 20.10
+Follow this installation procedure:
+
+su
+apt-get update ; apt-get -y install git python3-dev python3-pip python3-numpy cython3 python3-smbus portaudio19-dev libportaudio2 libffi-dev
+pip3 install rtmidi-python pyaudio cffi sounddevice
+cd /root
+git clone https://github.com/devegoo/SamplerBox.git
+cd SamplerBox
+python3 setup.py build_ext --inplace
+cp samplerbox.service  /etc/systemd/system/samplerbox.service
+systemctl enable samplerbox
+systemctl start samplerbox
+systemctl status samplerbox
+
 SamplerBox
 ==========
 

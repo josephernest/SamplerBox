@@ -25,6 +25,34 @@ systemctl start samplerbox
 
 systemctl status samplerbox
 
+Download samples to /root/SamplerBox/
+or change in samplerbox.py line:
+SAMPLES_DIR = "."  to
+SAMPLES_DIR = "/path/to/your/samples/dir/"
+
+You may also want change default audio device
+change in samplerbox.py line:
+'AUDIO_DEVICE_ID = 0' to
+'AUDIO_DEVICE_ID = 1' etc...
+
+befor using disable pulseaudio server : 
+
+systemctl --user stop pulseaudio.socket
+systemctl --user stop pulseaudio.service
+
+sudo systemctl restart samplerbox.service
+
+after using for enabling pulseaudio :
+
+systemctl --user start pulseaudio.socket
+systemctl --user start pulseaudio.service
+
+sudo systemctl stop samplerbox.service
+
+to disable service autostart :
+
+sudo systemctl disable samplerbox.service
+
 SamplerBox
 ==========
 

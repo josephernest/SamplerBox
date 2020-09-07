@@ -321,18 +321,18 @@ def ActuallyLoad():
                 samples[midinote, 127] = Sound(file, midinote, 127)
 
     initial_keys = set(samples.keys())
-    for midinote in range(128):
+    for midinote in xrange(128):
         lastvelocity = None
-        for velocity in range(128):
+        for velocity in xange(128):
             if (midinote, velocity) not in initial_keys:
                 samples[midinote, velocity] = lastvelocity
             else:
                 if not lastvelocity:
-                    for v in range(velocity):
+                    for v in xrange(velocity):
                         samples[midinote, v] = samples[midinote, velocity]
                 lastvelocity = samples[midinote, velocity]
         if not lastvelocity:
-            for velocity in range(128):
+            for velocity in xrange(128):
                 try:
                     samples[midinote, velocity] = samples[midinote-1, velocity]
                 except:

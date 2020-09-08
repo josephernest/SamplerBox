@@ -12,7 +12,7 @@ pip3 install rtmidi-python pyaudio cffi sounddevice future
 cd /root
 
 git clone https://github.com/devegoo/SamplerBox.git
-t
+
 cd SamplerBox
 
 python3 setup.py build_ext --inplace

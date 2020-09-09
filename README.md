@@ -63,7 +63,7 @@ systemctl start samplerbox
 
 systemctl status samplerbox
 
-Download samples to /root/SamplerBox/
+Download samples to /opt/SamplerBox/
 or change in samplerbox.py line:
 SAMPLES_DIR = "."  to
 SAMPLES_DIR = "/path/to/your/samples/dir/"

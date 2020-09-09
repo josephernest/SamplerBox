@@ -11,6 +11,7 @@ ln -s start_samplerbox /usr/bin/
 ln -s stop_samplerbox /usr/bin/
 # sample renamer
 ln -s nametonote /usr/bin/
-
-
+chmod +x /usr/bin/start_samplerbox
+chmod +x /usr/bin/stop_samplerbox
+chmod +x /usr/bin/nametonote
 

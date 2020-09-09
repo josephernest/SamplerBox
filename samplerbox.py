@@ -313,7 +313,7 @@ def ActuallyLoad():
                     print("Error in definition file, skipping line %s." % (i+1))
 
     else:
-        for midinote in range(0, 127):
+        for midinote in xrange(0, 127):
             if LoadingInterrupt:
                 return
             file = os.path.join(dirname, "%d.wav" % midinote)
@@ -323,7 +323,7 @@ def ActuallyLoad():
     initial_keys = set(samples.keys())
     for midinote in xrange(128):
         lastvelocity = None
-        for velocity in xange(128):
+        for velocity in xrange(128):
             if (midinote, velocity) not in initial_keys:
                 samples[midinote, velocity] = lastvelocity
             else:

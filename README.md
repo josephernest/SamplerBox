@@ -1,6 +1,6 @@
 EASY INSTALL:
 
-wget https://github.com/devegoo/SamplerBox/blob/master/setup.sh
+wget https://raw.githubusercontent.com/devegoo/SamplerBox/master/setup.sh
 
 sudo su
 

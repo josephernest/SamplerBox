@@ -3,9 +3,13 @@ ATTENTION FOR NEW INSTRUMENTS: Inside directories Samples must be named  via "MI
 or process your samples to have only in filename "midinote.WAV" "WAV" not "wav" in renemer program "krename" for example ,it can be easly done.. then use tool (./tools/nametonote.py to convert midiNoteName.WAV to midiNumber.wav
 
 >>
+
 cp /tools/nametonote.py to /path/with/samples
+
 cd /path/with/samples
+
 python3 nametonote.py
+
 >>
 
 Updated for python3 ...

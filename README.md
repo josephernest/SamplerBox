@@ -1,16 +1,23 @@
 EASY INSTALL:
 
 wget https://github.com/devegoo/SamplerBox/blob/master/setup.sh
+
 sudo su
+
 chmod +x setup.sh
+
 ./setup.sh
 
 RUNNING :
+
   command to start: "start_samplerbox"
+  
   command to stop: "stop_samplerbox"
 
   command to rename samples : 
+  
 cd /to/samples/dir/
+
 nametonote
 
 MANUAL WAY :

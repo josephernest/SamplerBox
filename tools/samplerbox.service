@@ -1,9 +1,6 @@
 [Unit]
 Description=Starts SamplerBox
-DefaultDependencies=false            # Very important! Without this line, the service 
-                                     # would wait until networking.service
-                                     # has finished initialization. This could add 10 
-                                     # more seconds because of DHCP, IP attribution, etc.
+DefaultDependencies=false
 
 [Service]
 Type=simple

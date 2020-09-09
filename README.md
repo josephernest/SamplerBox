@@ -1,6 +1,6 @@
 ATTENTION FOR NEW INSTRUMENTS: Inside directories Samples must be named  via "MIDI NOTE NUMBER" , by now code is broken for definition.txt recognition... for renaming samples use this table https://en.wikipedia.org/wiki/Scientific_pitch_notation
 
-or process your samples to have only in filename "midinote.WAV" "WAV" not "wav" in renemer program "krename" for example ,it can be easly done.. then use tool (./tools/nametonote.py to convert midiNoteName.WAV to midiNumber.wav
+or process your samples to have only in filename "midinote.wav" in renemer program "krename" for example ,it can be easly done.. then use tool (./tools/nametonote.py to convert midiNoteName.wav to midiNumber.wav
 
 >>
 

@@ -7,7 +7,7 @@ DefaultDependencies=false            # Very important! Without this line, the se
 
 [Service]
 Type=simple
-ExecStart=/opt/SamplerBox/samplerbox.sh
+ExecStart=/opt/SamplerBox/tools/samplerbox.sh
 WorkingDirectory=/opt/SamplerBox/
 
 [Install]

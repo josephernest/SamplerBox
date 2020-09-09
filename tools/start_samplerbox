@@ -1,0 +1,4 @@
+#!/bin/bash
+systemctl --user stop pulseaudio.socket
+systemctl --user stop pulseaudio.service
+systemctl start samplerbox.service

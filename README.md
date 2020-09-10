@@ -1,4 +1,5 @@
 EASY INSTALL:
+
 to /opt/
 
 wget https://raw.githubusercontent.com/devegoo/SamplerBox/master/setup.sh
@@ -26,9 +27,11 @@ full howto : https://github.com/devegoo/midi-note-name-to-number
 
 MANUAL WAY :
 
-ATTENTION FOR NEW INSTRUMENTS: Inside directories Samples must be named  via "MIDI NOTE NUMBER" , by now code is broken for definition.txt recognition... for renaming samples use this table https://en.wikipedia.org/wiki/Scientific_pitch_notation
+ATTENTION FOR NEW INSTRUMENTS: Inside directories Samples must be named  via "MIDI NOTE NUMBER" ,
+by now code is broken for definition.txt recognition... for renaming samples use this table https://en.wikipedia.org/wiki/Scientific_pitch_notation
 
-or process your samples to have only in filename "midinote.wav" in renemer program "krename" for example ,it can be easly done.. then use tool (./tools/nametonote.py to convert midiNoteName.wav to midiNumber.wav
+or process your samples to have only in filename "midinote.wav" in renemer program "krename" for example ,
+it can be easly done.. then use tool (./tools/nametonote.py to convert midiNoteName.wav to midiNumber.wav
 
 >>
 
@@ -43,6 +46,7 @@ python3 nametonote.py
 Updated for python3 ...
 
 tested on Ubuntu 20.10
+
 Follow this installation procedure:
 
 su
@@ -68,11 +72,15 @@ systemctl start samplerbox
 systemctl status samplerbox
 
 Download samples to /opt/SamplerBox/
+
 or change in samplerbox.py line:
+
 SAMPLES_DIR = "."  to
+
 SAMPLES_DIR = "/path/to/your/samples/dir/"
 
 You may also want change default audio device
+
 change in samplerbox.py line:
 
 'AUDIO_DEVICE_ID = 0' to
@@ -105,6 +113,7 @@ ENJOY
 
 
 ORYGINAL INFO FROM AUTHOR :
+
 >>>>>>>>>>
 SamplerBox
 ==========

@@ -21,6 +21,9 @@ cd /to/samples/dir/
 
 nametonote
 
+full howto : https://github.com/devegoo/midi-note-name-to-number
+
+
 MANUAL WAY :
 
 ATTENTION FOR NEW INSTRUMENTS: Inside directories Samples must be named  via "MIDI NOTE NUMBER" , by now code is broken for definition.txt recognition... for renaming samples use this table https://en.wikipedia.org/wiki/Scientific_pitch_notation

@@ -29,7 +29,7 @@ or process your samples to have only in filename "midinote.wav" in renemer progr
 
 >>
 
-cp /tools/nametonote.py to /path/with/samples
+cp tools/nametonote.py to /path/with/samples
 
 cd /path/with/samples
 

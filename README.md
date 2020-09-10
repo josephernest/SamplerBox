@@ -48,7 +48,7 @@ apt-get update ; apt-get -y install git python3-dev python3-pip python3-numpy cy
 
 pip3 install rtmidi-python pyaudio cffi sounddevice future
 
-cd /root
+cd /opt
 
 git clone https://github.com/devegoo/SamplerBox.git
 

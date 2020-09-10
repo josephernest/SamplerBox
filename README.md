@@ -96,6 +96,13 @@ to disable service autostart :
 
 sudo systemctl disable samplerbox.service
 
+ENJOY
+
+
+
+
+ORYGINAL INFO FROM AUTHOR :
+>>>>>>>>>>
 SamplerBox
 ==========
 

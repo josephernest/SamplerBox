@@ -2,7 +2,7 @@ EASY INSTALL:
 
 to /opt/
 
-wget https://raw.githubusercontent.com/devegoo/SamplerBox/master/setup.sh
+wget https://raw.githubusercontent.com/devegoo/SamplerBox/master/setup_over_web.sh
 
 sudo su
 

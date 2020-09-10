@@ -56,7 +56,7 @@ cd SamplerBox
 
 python3 setup.py build_ext --inplace
 
-cp samplerbox.service  /etc/systemd/system/samplerbox.service
+cp tools/samplerbox.service  /etc/systemd/system/samplerbox.service
 
 systemctl enable samplerbox
 

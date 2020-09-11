@@ -28,23 +28,7 @@ EXTRA SAMPLE FOR SAMPLERBOX on this link:
 
 https://github.com/devegoo/SamplerBoxSample
 
-MANUAL WAY :
 
-ATTENTION FOR NEW INSTRUMENTS: Inside directories Samples must be named  via "MIDI NOTE NUMBER" ,
-by now code is broken for definition.txt recognition... for renaming samples use this table https://en.wikipedia.org/wiki/Scientific_pitch_notation
-
-or process your samples to have only in filename "midinote.wav" in renemer program "krename" for example ,
-it can be easly done.. then use tool (tools/nametonote.py to convert midiNoteName.wav to midiNumber.wav)
-
->>
-
-cp tools/nametonote.py to /path/with/samples
-
-cd /path/with/samples
-
-python3 nametonote.py
-
->>
 
 Updated for python3 ...
 

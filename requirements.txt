@@ -1,0 +1,8 @@
+setuptools==49.6.0
+Cython==0.29.21
+PyAudio==0.2.11
+cffi==1.13.2
+sounddevice==0.3.15
+testresources==2.0.1
+rtmidi2==0.8.4
+numpy==1.19.1

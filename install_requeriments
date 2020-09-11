@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+
+###################################################################################################
+
+# Check for root privileges
+if [ "$(id -u)" != "0" ]; then
+    printf "This script must be executed with administration privileges.\n\n"
+    exit 1
+fi
+
+###################################################################################################
+
+### Functions
+
+# APT update function
+apt_update()
+{
+    echo "-------------------------------------------------"
+    echo " Updating Repositories"
+    echo "-------------------------------------------------"
+    apt-get update
+    echo ""
+}
+
+# APT install package function
+apt_install()
+{
+    if [ $# -gt 0 ]; then
+        echo "-------------------------------------------------"
+        echo " Installing ${1} package"
+        echo "-------------------------------------------------"
+        apt-get -y install $1
+        if [[ $? != 0 ]]; then
+            printf "Error: Can't install ${1} package.\n\n"
+            exit 1
+        fi
+        echo ""
+    fi
+}
+
+###################################################################################################
+
+### Installation
+
+# APT Packages
+apt_update
+apt_install git
+apt_install python3
+apt_install python3-dev
+apt_install python3-pip
+apt_install cython
+apt_install python3-smbus
+apt_install portaudio19-dev
+apt_install libportaudio2
+apt_install libffi-dev
+
+# PIP Modules
+pip install -r requirements.txt
+if [[ $? != 0 ]]; then
+    printf "Error: pip requirements installation fail.\n\n"
+    exit 1
+fi
+
+printf "\nEverything has been successfully installed.\n\n"
+exit 0

@@ -14,18 +14,22 @@
 # CONFIG
 #########################################
 
-AUDIO_DEVICE_ID = 0                     # change this number to use another soundcard
-SAMPLES_DIR = "."                       # The root directory containing the sample-sets. Example: "/media/" to look for samples on a USB stick / SD card
-USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
-USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C
-USE_BUTTONS = False                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
-MAX_POLYPHONY = 80                      # This can be set higher, but 80 is a safe value
-
+AUDIO_DEVICE_ID = "0"       # change this number to use another soundcard
+SAMPLES_DIR = "."         # The root directory containing the sample-sets. Example: "/media/" to look for samples on a USB stick / SD card
+USE_SERIALPORT_MIDI = False       # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
+USE_I2C_7SEGMENTDISPLAY = False   # Set to True to use a 7-segment display via I2C
+USE_BUTTONS = False               # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
+USE_KEYBOARD = True               # Set to true to use keyboard '+' and '-' to increase/decrease presets
+MAX_POLYPHONY = 80                # This can be set higher, but 80 is a safe value
+DEBUG = False
 
 #########################################
 # IMPORT
 # MODULES
 #########################################
+
+#import pyximport
+#pyximport.install()
 
 import wave
 import time
@@ -36,10 +40,78 @@ import sounddevice
 import threading
 from chunk import Chunk
 import struct
-import rtmidi_python as rtmidi
+import rtmidi2 as rtmidi
 import samplerbox_audio
-import sys
-from past.builtins import xrange
+from sys import argv as sys_argv
+from signal import signal, SIGTERM, SIGINT
+from traceback import format_exc as traceback_format_exc
+
+####################################################################################################
+
+### Termination Signals Handler For Program Process ###
+
+def signal_handler(signal,  frame):
+    '''Termination signals (SIGINT, SIGTERM) handler for program process'''
+    print("Exit")
+    exit(0)
+
+
+### Signals attachment ###
+signal(SIGTERM, signal_handler) # SIGTERM (kill pid) to signal_handler
+signal(SIGINT, signal_handler)  # SIGINT (Ctrl+C) to signal_handler
+
+####################################################################################################
+
+### Check for input arguments ###
+
+argv = sys_argv[1:]
+argc = len(sys_argv)-1
+for arg in argv:
+    if arg == "debug":
+        DEBUG = True
+    elif arg == "devices":
+        print(sounddevice.query_devices())
+        exit(0)
+    else:
+        try:
+            AUDIO_DEVICE_ID = int(arg)
+        except ValueError:
+            print(sounddevice.query_devices())
+            exit(0)
+
+####################################################################################################
+
+### Debug Function ###
+
+def _debug(text):
+    if DEBUG:
+        print(text)
+
+####################################################################################################
+
+### Preset Change Functions ###
+
+def set_preset(num):
+    global preset
+    if num < 0:
+        num = 0
+    preset = num
+    print("\nPreset: {}".format(preset))
+    LoadSamples()
+
+
+def preset_reduce():
+    global preset
+    preset = preset - 1
+    set_preset(preset)
+
+
+def preset_increase():
+    global preset
+    preset = preset + 1
+    set_preset(preset)
+
+####################################################################################################
 
 #########################################
 # SLIGHT MODIFICATION OF PYTHON'S WAVE MODULE
@@ -56,9 +128,9 @@ class waveread(wave.Wave_read):
         self._ieee = False
         self._file = Chunk(file, bigendian=0)
         if self._file.getname() != b'RIFF':
-            print('file does not start with RIFF id')
+            raise Exception("Error: file does not start with RIFF id")
         if self._file.read(4) != b'WAVE':
-            print('not a WAVE file')
+            raise Exception("Error: Not a WAV file")
         self._fmt_chunk_read = 0
         self._data_chunk = None
         while 1:
@@ -73,7 +145,7 @@ class waveread(wave.Wave_read):
                 self._fmt_chunk_read = 1
             elif chunkname == b'data':
                 if not self._fmt_chunk_read:
-                    print('data chunk before fmt chunk')
+                    raise Exception("Error: data chunk before fmt chunk")
                 self._data_chunk = chunk
                 self._nframes = chunk.chunksize // self._framesize
                 self._data_seek_needed = 0
@@ -90,7 +162,7 @@ class waveread(wave.Wave_read):
                     self._loops.append([start, end])
             chunk.skip()
         if not self._fmt_chunk_read or not self._data_chunk:
-            print('fmt chunk and/or data chunk missing')
+            raise Exception("Error: fmt chunk and/or data chunk missing")
 
     def getmarkers(self):
         return self._cue
@@ -191,11 +263,19 @@ def AudioCallback(outdata, frame_count, time_info, status):
 def MidiCallback(message, time_stamp):
     global playingnotes, sustain, sustainplayingnotes
     global preset
+    _debug("{} - {}\n".format(time_stamp, message))
     messagetype = message[0] >> 4
-    messagechannel = (message[0] & 15) + 1
+    #messagechannel = (message[0] & 15) + 1
     note = message[1] if len(message) > 1 else None
     midinote = note
     velocity = message[2] if len(message) > 2 else None
+
+    # Control Preset
+    if messagetype == 14:
+        if velocity == 0:
+            preset_reduce()
+        elif velocity == 126:
+            preset_increase()
 
     if messagetype == 9 and velocity == 0:
         messagetype = 8
@@ -218,7 +298,7 @@ def MidiCallback(message, time_stamp):
             playingnotes[midinote] = []
 
     elif messagetype == 12:  # Program change
-        print('Program change ' + str(note))
+        print("Program change {}".format(str(note)))
         preset = note
         LoadSamples()
 
@@ -274,10 +354,10 @@ def ActuallyLoad():
     if basename:
         dirname = os.path.join(samplesdir, basename)
     if not basename:
-        print('Preset empty: %s' % preset)
+        print("Preset empty: {}".format(preset))
         display("E%03d" % preset)
         return
-    print('Preset loading: %s (%s)' % (preset, basename))
+    print("Preset loading: {} ({})".format(preset, basename))
     display("L%03d" % preset)
 
     definitionfname = os.path.join(dirname, "definition.txt")
@@ -296,8 +376,8 @@ def ActuallyLoad():
                         defaultparams.update(dict([item.split('=') for item in pattern.split(',', 1)[1].replace(' ', '').replace('%', '').split(',')]))
                     pattern = pattern.split(',')[0]
                     pattern = re.escape(pattern.strip())
-                    pattern = pattern.replace(r"\%midinote", r"(?P<midinote>\d+)").replace(r"\%velocity", r"(?P<velocity>\d+)")\
-                                     .replace(r"\%notename", r"(?P<notename>[A-Ga-g]#?[0-9])").replace(r"\*", r".*?").strip()    # .*? => non greedy
+                    pattern = pattern.replace(r"%midinote", r"(?P<midinote>\d+)").replace(r"\%velocity", r"(?P<velocity>\d+)")\
+                                     .replace(r"%notename", r"(?P<notename>[A-Ga-g]#?[0-9])").replace(r"\*", r".*?").strip()    # .*? => non greedy
                     for fname in os.listdir(dirname):
                         if LoadingInterrupt:
                             return
@@ -311,10 +391,10 @@ def ActuallyLoad():
                                 midinote = NOTES.index(notename[:-1].lower()) + (int(notename[-1])+2) * 12
                             samples[midinote, velocity] = Sound(os.path.join(dirname, fname), midinote, velocity)
                 except:
-                    print("Error in definition file, skipping line %s." % (i+1))
+                    print("Error in definition file, skipping line {}.".format(i+1))
 
     else:
-        for midinote in xrange(0, 127):
+        for midinote in range(0, 127):
             if LoadingInterrupt:
                 return
             file = os.path.join(dirname, "%d.wav" % midinote)
@@ -322,27 +402,27 @@ def ActuallyLoad():
                 samples[midinote, 127] = Sound(file, midinote, 127)
 
     initial_keys = set(samples.keys())
-    for midinote in xrange(128):
+    for midinote in range(128):
         lastvelocity = None
-        for velocity in xrange(128):
+        for velocity in range(128):
             if (midinote, velocity) not in initial_keys:
                 samples[midinote, velocity] = lastvelocity
             else:
                 if not lastvelocity:
-                    for v in xrange(velocity):
+                    for v in range(velocity):
                         samples[midinote, v] = samples[midinote, velocity]
                 lastvelocity = samples[midinote, velocity]
         if not lastvelocity:
-            for velocity in xrange(128):
+            for velocity in range(128):
                 try:
                     samples[midinote, velocity] = samples[midinote-1, velocity]
                 except:
                     pass
     if len(initial_keys) > 0:
-        print('Preset loaded: ' + str(preset))
+        print("Preset loaded: {}".format(str(preset)))
         display("%04d" % preset)
     else:
-        print('Preset empty: ' + str(preset))
+        print("Preset empty: {}".format(str(preset)))
         display("E%03d" % preset)
 
 
@@ -352,12 +432,39 @@ def ActuallyLoad():
 #########################################
 
 try:
-    sd = sounddevice.OutputStream(device=AUDIO_DEVICE_ID, blocksize=512, samplerate=44100, channels=2, dtype='int16', callback=AudioCallback)
+    sd = sounddevice.OutputStream(device=AUDIO_DEVICE_ID, blocksize=512, 
+            samplerate=44100, channels=2, dtype='int16', callback=AudioCallback)
     sd.start()
-    print('Opened audio device #%i' % AUDIO_DEVICE_ID)
-except:
-    print('Invalid audio device #%i' % AUDIO_DEVICE_ID)
+    print("Opened audio device #{}".format(AUDIO_DEVICE_ID))
+except Exception:
+    print("\n[ERROR] {}".format(traceback_format_exc()))
+    print("Invalid audio device #{}".format(AUDIO_DEVICE_ID))
     exit(1)
+
+
+#########################################
+# KEYBOARD THREAD (NEEDS ROOT)
+#
+#########################################
+if USE_KEYBOARD:
+    from keyboard import read_key as keyboard_read_key
+
+    def Keyboard():
+        global preset
+        try:
+            while True:
+                if keyboard_read_key() == '-':
+                    preset_reduce()
+                elif keyboard_read_key() == '+':
+                    preset_increase()
+                time.sleep(0.350)
+        except ImportError:
+            print("You need to be root to use keyboard")
+
+
+    KeyboardThread = threading.Thread(target=Keyboard)
+    KeyboardThread.daemon = True
+    KeyboardThread.start()
 
 
 #########################################
@@ -472,14 +579,24 @@ LoadSamples()
 # MAIN LOOP
 #########################################
 
-midi_in = [rtmidi.MidiIn(b'in')]
-previous = []
+midi_in = rtmidi.MidiInMulti()
+curr_ports = []
+prev_ports = []
+first_loop = True
 while True:
-    for port in midi_in[0].ports:
-        if port not in previous and b'Midi Through' not in port:
-            midi_in.append(rtmidi.MidiIn(b'in'))
-            midi_in[-1].callback = MidiCallback
-            midi_in[-1].open_port(port)
-            print('Opened MIDI: ' + str(port))
-    previous = midi_in[0].ports
+    curr_ports = rtmidi.get_in_ports()
+    if (len(prev_ports) != len(curr_ports)):
+        midi_in.close_ports()
+        prev_ports = []
+    for port in curr_ports:
+        if port not in prev_ports and "Midi Through" not in port and (len(prev_ports) != len(curr_ports)):
+            midi_in.open_ports(port)
+            midi_in.callback = MidiCallback
+            if first_loop:
+                print("Opened MIDI port: {}".format(port))
+                first_loop = False
+            else:
+                print("Reopening MIDI port: {}".format(port))
+            prev_ports = curr_ports
     time.sleep(2)
+

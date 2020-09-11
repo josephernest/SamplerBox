@@ -30,7 +30,7 @@ https://github.com/devegoo/SamplerBoxSample
 
 
 
-Updated for python3 ...
+Updated for python3 ... https://github.com/J-Rios
 
 tested on Ubuntu 20.10
 

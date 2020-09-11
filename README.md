@@ -24,6 +24,9 @@ nametonote
 
 full howto : https://github.com/devegoo/midi-note-name-to-number
 
+EXTRA SAMPLE FOR SAMPLERBOX on this link:
+
+https://github.com/devegoo/SamplerBoxSample
 
 MANUAL WAY :
 

@@ -3,7 +3,7 @@ SamplerBox
 
 An open-source audio sampler project based on RaspberryPi.
 
-Website: www.samplerbox.org
+Website: [www.samplerbox.org](https://www.samplerbox.org)
 
 [![](http://gget.it/flurexml/1.jpg)](https://www.youtube.com/watch?v=yz7GZ8YOjTw)
 

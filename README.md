@@ -51,6 +51,16 @@ The ready-to-use ISO images available on [www.samplerbox.org](http://www.sampler
 Author : Joseph Ernest (twitter: [@JosephErnest](http:/twitter.com/JosephErnest), mail: [contact@samplerbox.org](mailto:contact@samplerbox.org))
 
 
+[Sponsors and consulting](#sponsors)
+----
+
+I am available for Python, Data science, ML, Automation **consulting**. Please contact me on https://afewthingz.com for freelancing requests.
+
+Do you want to support the development of my open-source projects? Please contact me!
+
+I am currently sponsored by [CodeSigningStore.com](https://codesigningstore.com). Thank you to them for providing a DigiCert Code Signing Certificate and supporting open source software.
+
+
 [License](#license)
 ----
 

@@ -5,12 +5,12 @@ An open-source audio sampler project based on RaspberryPi.
 
 Website: [www.samplerbox.org](https://www.samplerbox.org)
 
-[![](http://gget.it/flurexml/1.jpg)](https://www.youtube.com/watch?v=yz7GZ8YOjTw)
+[![](https://gget.it/flurexml/1.jpg)](https://www.youtube.com/watch?v=yz7GZ8YOjTw)
 
 [Install](#install)
 ----
 
-SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (such as [this 6€ one](http://www.ebay.fr/itm/1Pc-PCM2704-5V-Mini-USB-Alimente-Sound-Carte-DAC-decodeur-Board-pr-ordinateur-PC-/231334667385?pt=LH_DefaultDomain_71&hash=item35dc9ee479)) for better sound quality.
+SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (PCM7204 USB DAC for less than 10€ on eBay is fine) for better sound quality.
 
 1. Install the required dependencies (Python-related packages and audio libraries):
 
@@ -36,19 +36,19 @@ SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommende
 [How to use it](#howto)
 ----
 
-See the [FAQ](http://www.samplerbox.org/faq) on www.samplerbox.org.
+See the [FAQ](https://www.samplerbox.org/faq) on https://www.samplerbox.org.
 
 
 [ISO image](#isoimage)
 ----
 
-The ready-to-use ISO images available on [www.samplerbox.org](http://www.samplerbox.org) are built with the help of a script that can be found in `isoimage/samplerbox_iso_maker.sh`.
+The ready-to-use ISO images available on [www.samplerbox.org](https://www.samplerbox.org) are built with the help of a script that can be found in `isoimage/samplerbox_iso_maker.sh`.
 
 
 [About](#about)
 ----
 
-Author : Joseph Ernest (twitter: [@JosephErnest](http:/twitter.com/JosephErnest), mail: [contact@samplerbox.org](mailto:contact@samplerbox.org))
+Author : Joseph Ernest (twitter: [@JosephErnest](https:/twitter.com/JosephErnest), mail: [contact@samplerbox.org](mailto:contact@samplerbox.org))
 
 
 [Sponsors and consulting](#sponsors)
@@ -64,4 +64,4 @@ I am currently sponsored by [CodeSigningStore.com](https://codesigningstore.com)
 [License](#license)
 ----
 
-[Creative Commons BY-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/)
+[Creative Commons BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)

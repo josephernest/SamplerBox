@@ -1,7 +1,11 @@
 SamplerBox
 ==========
 
-An open-source audio sampler project based on RaspberryPi.
+*Update: [Remove drums from song](https://www.yellownoiseaudio.com) with the VST DrumExtract!*
+
+&nbsp;
+
+SamplerBox is an **open-source DIY audio sampler project** based on RaspberryPi.
 
 Website: [www.samplerbox.org](https://www.samplerbox.org)
 

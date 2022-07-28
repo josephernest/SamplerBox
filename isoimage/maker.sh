@@ -20,7 +20,7 @@ mount -v -t vfat -o sync /dev/mapper/loop0p1 sdcard/boot
 echo root:root | chroot sdcard chpasswd
 chroot sdcard apt update
 chroot sdcard apt install -y build-essential python-dev python-pip cython python-smbus python-numpy python-rpi.gpio python-serial portaudio19-dev alsa-utils git libportaudio2 libffi-dev raspberrypi-kernel ntpdate
-chroot sdcard pip install rtmidi-python pyaudio cffi sounddevice
+chroot sdcard pip install python-rtmidi pyaudio cffi sounddevice
 chroot sdcard sh -c "cd /root ; git clone https://github.com/josephernest/SamplerBox.git ; cd SamplerBox ; python setup.py build_ext --inplace"
 cp -R root/* sdcard
 chroot sdcard systemctl enable /etc/systemd/system/samplerbox.service

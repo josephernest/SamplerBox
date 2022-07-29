@@ -32,13 +32,26 @@ import time
 import numpy
 import os
 import re
+import sys
 import sounddevice
 import threading
 from chunk import Chunk
 import struct
 import rtmidi
 import samplerbox_audio
+import logging
 
+#########################################
+# LOGGING
+#########################################
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(levelname)s] %(message)s",
+    handlers=[
+        logging.StreamHandler(),
+    ]
+)
 
 #########################################
 # SLIGHT MODIFICATION OF PYTHON'S WAVE MODULE
@@ -217,7 +230,7 @@ def MidiCallback(message, time_stamp):
             playingnotes[midinote] = []
 
     elif messagetype == 12:  # Program change
-        print 'Program change ' + str(note)
+        logging.info('Program change {:d}'.format(note))
         preset = note
         LoadSamples()
 
@@ -273,11 +286,11 @@ def ActuallyLoad():
     if basename:
         dirname = os.path.join(samplesdir, basename)
     if not basename:
-        print 'Preset empty: %s' % preset
+        logging.info('Preset empty: {:d}'.format(preset))
         display("E%03d" % preset)
         return
-    print 'Preset loading: %s (%s)' % (preset, basename)
-    display("L%03d" % preset)
+    logging.info('Preset loading: {:d} ({:s})'.format(preset, basename))
+    display('L{:03d}'.format(preset))
 
     definitionfname = os.path.join(dirname, "definition.txt")
     if os.path.isfile(definitionfname):
@@ -310,7 +323,7 @@ def ActuallyLoad():
                                 midinote = NOTES.index(notename[:-1].lower()) + (int(notename[-1])+2) * 12
                             samples[midinote, velocity] = Sound(os.path.join(dirname, fname), midinote, velocity)
                 except:
-                    print "Error in definition file, skipping line %s." % (i+1)
+                    logging.warning('Error in definition file, skipping line {Od}.'.format(i+1))
 
     else:
         for midinote in range(0, 127):
@@ -338,11 +351,11 @@ def ActuallyLoad():
                 except:
                     pass
     if len(initial_keys) > 0:
-        print 'Preset loaded: ' + str(preset)
-        display("%04d" % preset)
+        logging.info('Preset loaded: {:d}'.format(preset))
+        display('{:04d}'.format(preset))
     else:
-        print 'Preset empty: ' + str(preset)
-        display("E%03d" % preset)
+        logging.warning('Preset empty: {:d}'.format(preset))
+        display('E{:03d}'.format(preset))
 
 
 #########################################
@@ -353,9 +366,9 @@ def ActuallyLoad():
 try:
     sd = sounddevice.OutputStream(device=AUDIO_DEVICE_ID, blocksize=512, samplerate=44100, channels=2, dtype='int16', callback=AudioCallback)
     sd.start()
-    print 'Opened audio device #%i' % AUDIO_DEVICE_ID
+    logging.info('Opened audio device #{:d}'.format(AUDIO_DEVICE_ID))
 except:
-    print 'Invalid audio device #%i' % AUDIO_DEVICE_ID
+    logging.error('Invalid audio device #{:d}'.format(AUDIO_DEVICE_ID))
     exit(1)
 
 
@@ -486,6 +499,6 @@ while True:
             midi_in.append(rtmidi.MidiIn())
             midi_in[-1].callback = MidiCallback
             midi_in[-1].open_port(port)
-            print 'Opened MIDI: ' + port
+            logging.info('Opened MIDI: {:d}'.format(port))
     previous = midi_in[0].get_ports()
     time.sleep(2)

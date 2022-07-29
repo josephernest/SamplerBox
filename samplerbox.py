@@ -68,9 +68,9 @@ class waveread(wave.Wave_read):
         self._ieee = False
         self._file = Chunk(file, bigendian=0)
         if self._file.getname() != 'RIFF':
-            raise Error, 'file does not start with RIFF id'
+            raise OSError('file does not start with RIFF id')
         if self._file.read(4) != 'WAVE':
-            raise Error, 'not a WAVE file'
+            raise OSError('not a WAVE file')
         self._fmt_chunk_read = 0
         self._data_chunk = None
         while 1:
@@ -85,7 +85,7 @@ class waveread(wave.Wave_read):
                 self._fmt_chunk_read = 1
             elif chunkname == 'data':
                 if not self._fmt_chunk_read:
-                    raise Error, 'data chunk before fmt chunk'
+                    raise OSError('data chunk before fmt chunk')
                 self._data_chunk = chunk
                 self._nframes = chunk.chunksize // self._framesize
                 self._data_seek_needed = 0
@@ -102,7 +102,7 @@ class waveread(wave.Wave_read):
                     self._loops.append([start, end])
             chunk.skip()
         if not self._fmt_chunk_read or not self._data_chunk:
-            raise Error, 'fmt chunk and/or data chunk missing'
+            raise OSError('fmt chunk and/or data chunk missing')
 
     def getmarkers(self):
         return self._cue

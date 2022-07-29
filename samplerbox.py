@@ -463,6 +463,7 @@ if USE_SERIALPORT_MIDI:
                 if i == 2 and message[0] >> 4 == 12:  # program change: don't wait for a third byte: it has only 2 bytes
                     message[2] = 0
                     i = 3
+            logging.debug('midi: {}'.format(message))
             MidiCallback(message, None)
 
     MidiThread = threading.Thread(target=MidiSerialCallback)

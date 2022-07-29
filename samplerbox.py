@@ -162,7 +162,7 @@ class Sound:
         if sampwidth == 2:
             npdata = numpy.fromstring(data, dtype=numpy.int16)
         elif sampwidth == 3:
-            npdata = samplerbox_audio.binary24_to_int16(data, len(data)/3)
+            npdata = samplerbox_audio.binary24_to_int16(data, len(data)//3)
         if numchan == 1:
             npdata = numpy.repeat(npdata, 2)
         return npdata

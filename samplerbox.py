@@ -67,9 +67,9 @@ class waveread(wave.Wave_read):
         self._loops = []
         self._ieee = False
         self._file = Chunk(file, bigendian=0)
-        if self._file.getname() != 'RIFF':
+        if self._file.getname() != b'RIFF':
             raise OSError('file does not start with RIFF id')
-        if self._file.read(4) != 'WAVE':
+        if self._file.read(4) != b'WAVE':
             raise OSError('not a WAVE file')
         self._fmt_chunk_read = 0
         self._data_chunk = None
@@ -80,21 +80,21 @@ class waveread(wave.Wave_read):
             except EOFError:
                 break
             chunkname = chunk.getname()
-            if chunkname == 'fmt ':
+            if chunkname == b'fmt ':
                 self._read_fmt_chunk(chunk)
                 self._fmt_chunk_read = 1
-            elif chunkname == 'data':
+            elif chunkname == b'data':
                 if not self._fmt_chunk_read:
                     raise OSError('data chunk before fmt chunk')
                 self._data_chunk = chunk
                 self._nframes = chunk.chunksize // self._framesize
                 self._data_seek_needed = 0
-            elif chunkname == 'cue ':
+            elif chunkname == b'cue ':
                 numcue = struct.unpack('<i', chunk.read(4))[0]
                 for i in range(numcue):
                     id, position, datachunkid, chunkstart, blockstart, sampleoffset = struct.unpack('<iiiiii', chunk.read(24))
                     self._cue.append(sampleoffset)
-            elif chunkname == 'smpl':
+            elif chunkname == b'smpl':
                 manuf, prod, sampleperiod, midiunitynote, midipitchfraction, smptefmt, smpteoffs, numsampleloops, samplerdata = struct.unpack(
                     '<iiiiiiiii', chunk.read(36))
                 for i in range(numsampleloops):

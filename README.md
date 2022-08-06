@@ -14,7 +14,7 @@ Website: [www.samplerbox.org](https://www.samplerbox.org)
 [Install](#install)
 ----
 
-SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (PCM7204 USB DAC for less than 10€ on eBay is fine) for better sound quality.
+SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (PCM2704 USB DAC for less than 10€ on eBay is fine) for better sound quality.
 
 1. Install the required dependencies (Python-related packages and audio libraries):
 

@@ -14,7 +14,7 @@ Website: [www.samplerbox.org](https://www.samplerbox.org)
 [Install](#install)
 ----
 
-SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (PCM7204 USB DAC for less than 10€ on eBay is fine) for better sound quality.
+SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (PCM2704 USB DAC for less than 10€ on eBay is fine) for better sound quality.
 
 1. Install the required dependencies (Python-related packages and audio libraries):
 
@@ -23,7 +23,7 @@ SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommende
   sudo pip install rtmidi-python pyaudio cffi sounddevice
   ~~~
 
-2. Download SamplerBox and build it with: 
+2. Download SamplerBox and build it with:
 
   ~~~
   git clone https://github.com/josephernest/SamplerBox.git
@@ -32,7 +32,7 @@ SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommende
 
 3. Run the soft with `python samplerbox.py`.
 
-4. Play some notes on the connected MIDI keyboard, you'll hear some sound!  
+4. Play some notes on the connected MIDI keyboard, you'll hear some sound!
 
 *(Optional)*  Modify `samplerbox.py`'s first lines if you want to change root directory for sample-sets, default soundcard, etc.
 

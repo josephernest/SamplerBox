@@ -81,7 +81,7 @@ cat <<EOF > sdcard/boot/config.txt
 device_tree_param=i2c_arm=on
 enable_uart=1
 dtoverlay=pi3-miniuart-bt
-dtoverlay=midi-uart0 
+dtoverlay=midi-uart0
 gpu_mem=64
 boot_delay=0
 disable_splash=1

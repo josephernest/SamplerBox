@@ -74,13 +74,14 @@ chroot sdcard locale-gen LANG="en_GB.UTF-8"
 chroot sdcard dpkg-reconfigure -f noninteractive locales
 
 cat <<EOF > sdcard/boot/cmdline.txt
-root=/dev/mmcblk0p2 ro rootwait console=tty1 selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 elevator=noop bcm2708.uart_clock=3000000
+root=/dev/mmcblk0p2 ro rootwait console=tty1 selinux=0 plymouth.enable=0 smsc95xx.turbo_mode=N dwc_otg.lpm_enable=0 elevator=noop
 EOF
 
 cat <<EOF > sdcard/boot/config.txt
 device_tree_param=i2c_arm=on
-init_uart_clock=2441406
-init_uart_baud=38400
+enable_uart=1
+dtoverlay=pi3-miniuart-bt
+dtoverlay=midi-uart0
 gpu_mem=64
 boot_delay=0
 disable_splash=1

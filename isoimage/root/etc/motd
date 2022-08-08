@@ -1,0 +1,7 @@
+Welcome to SamplerBox!
+######################
+* The filesystem is read-only, see https://www.samplerbox.org/faq#readonly
+  Do "rw" to remount as read-write or:  mount -o remount,rw /
+* The SamplerBox program (/root/SamplerBox/samplerbox.py) should be
+  up and running. If not, try:  systemctl status samplerbox
+######################

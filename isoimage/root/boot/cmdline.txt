@@ -1,0 +1,1 @@
+root=/dev/mmcblk0p2 ro rootwait console=tty1 selinux=0 plymouth.enable=0 elevator=deadline bcm2708.uart_clock=3000000

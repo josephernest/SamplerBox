@@ -10,7 +10,6 @@
 
 
 #########################################
-# LOCAL
 # CONFIG
 #########################################
 
@@ -18,9 +17,16 @@ AUDIO_DEVICE_ID = 2                     # change this number to use another soun
 SAMPLES_DIR = "."                       # The root directory containing the sample-sets. Example: "/media/" to look for samples on a USB stick / SD card
 USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
 USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C
+USE_HD44780DISPLAY = False		# Set to True to use HD44780 display
 USE_BUTTONS = False                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
 MAX_POLYPHONY = 80                      # This can be set higher, but 80 is a safe value
+LOCAL_CONFIG = 'local_config.py'	# Local config filename
+DEBUG = False                           # Enable to switch verbose logging on
 
+# Load local config if available
+import os.path
+if os.path.isfile(LOCAL_CONFIG):
+    execfile(LOCAL_CONFIG)
 
 #########################################
 # IMPORT
@@ -37,8 +43,8 @@ import threading
 from chunk import Chunk
 import struct
 import rtmidi_python as rtmidi
-import samplerbox_audio
-
+import samplerbox_audio                         # legacy audio (pre RPi-2 models)
+#import samplerbox_audio_neon as samplerbox_audio # ARM NEON instruction set
 
 #########################################
 # SLIGHT MODIFICATION OF PYTHON'S WAVE MODULE
@@ -105,12 +111,13 @@ class waveread(wave.Wave_read):
 
 class PlayingSound:
 
-    def __init__(self, sound, note):
+    def __init__(self, sound, note, velocity):
         self.sound = sound
         self.pos = 0
         self.fadeoutpos = 0
         self.isfadeout = False
         self.note = note
+        self.velocity = velocity
 
     def fadeout(self, i):
         self.isfadeout = True
@@ -140,8 +147,9 @@ class Sound:
 
         wf.close()
 
-    def play(self, note):
-        snd = PlayingSound(self, note)
+    def play(self, note, velocity):
+        actual_velocity = 1-globalvelocitysensitivity + (globalvelocitysensitivity * (velocity/127.0))
+        snd = PlayingSound(self, note, actual_velocity)
         playingsounds.append(snd)
         return snd
 
@@ -178,7 +186,7 @@ def AudioCallback(outdata, frame_count, time_info, status):
     global playingsounds
     rmlist = []
     playingsounds = playingsounds[-MAX_POLYPHONY:]
-    b = samplerbox_audio.mixaudiobuffers(playingsounds, rmlist, frame_count, FADEOUT, FADEOUTLENGTH, SPEED)
+    b = samplerbox_audio.mixaudiobuffers(playingsounds, rmlist, frame_count, FADEOUT, FADEOUTLENGTH, SPEED, globalvolume)
     for e in rmlist:
         try:
             playingsounds.remove(e)
@@ -202,7 +210,7 @@ def MidiCallback(message, time_stamp):
     if messagetype == 9:    # Note on
         midinote += globaltranspose
         try:
-            playingnotes.setdefault(midinote, []).append(samples[midinote, velocity].play(midinote))
+            playingnotes.setdefault(midinote, []).append(samples[midinote, velocity].play(midinote, velocity))
         except:
             pass
 
@@ -262,10 +270,12 @@ def ActuallyLoad():
     global samples
     global playingsounds
     global globalvolume, globaltranspose
+    global globalvelocitysensitivity
     playingsounds = []
     samples = {}
     globalvolume = 10 ** (-12.0/20)  # -12dB default global volume
     globaltranspose = 0
+    globalvelocitysensitivity = 0 # default midi velocity sensitivity 
 
     samplesdir = SAMPLES_DIR if os.listdir(SAMPLES_DIR) else '.'      # use current folder (containing 0 Saw) if no user media containing samples has been found
 
@@ -274,10 +284,10 @@ def ActuallyLoad():
         dirname = os.path.join(samplesdir, basename)
     if not basename:
         print 'Preset empty: %s' % preset
-        display("E%03d" % preset)
+        display("E%03d" % preset, [str(preset), 'EMPTY'])
         return
     print 'Preset loading: %s (%s)' % (preset, basename)
-    display("L%03d" % preset)
+    display("L%03d" % preset, [basename, 'Loading'])
 
     definitionfname = os.path.join(dirname, "definition.txt")
     if os.path.isfile(definitionfname):
@@ -289,6 +299,9 @@ def ActuallyLoad():
                         continue
                     if r'%%transpose' in pattern:
                         globaltranspose = int(pattern.split('=')[1].strip())
+                        continue
+                    if r'%%velocitysensitivity' in pattern:
+                        globalvelocitysensitivity = float(pattern.split('=')[1].strip())
                         continue
                     defaultparams = {'midinote': '0', 'velocity': '127', 'notename': ''}
                     if len(pattern.split(',')) > 1:
@@ -339,10 +352,10 @@ def ActuallyLoad():
                     pass
     if len(initial_keys) > 0:
         print 'Preset loaded: ' + str(preset)
-        display("%04d" % preset)
+        display("%04d" % preset, [basename, 'Ready'])
     else:
         print 'Preset empty: ' + str(preset)
-        display("E%03d" % preset)
+        display("E%03d" % preset, [str(preset), 'EMPTY'])
 
 
 #########################################
@@ -371,19 +384,19 @@ if USE_BUTTONS:
 
     def Buttons():
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-        GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(26, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+        GPIO.setup(16, GPIO.IN, pull_up_down=GPIO.PUD_UP)
         global preset, lastbuttontime
         while True:
             now = time.time()
-            if not GPIO.input(18) and (now - lastbuttontime) > 0.2:
+            if not GPIO.input(26) and (now - lastbuttontime) > 0.2:
                 lastbuttontime = now
                 preset -= 1
                 if preset < 0:
                     preset = 127
                 LoadSamples()
 
-            elif not GPIO.input(17) and (now - lastbuttontime) > 0.2:
+            elif not GPIO.input(16) and (now - lastbuttontime) > 0.2:
                 lastbuttontime = now
                 preset += 1
                 if preset > 127:
@@ -407,7 +420,7 @@ if USE_I2C_7SEGMENTDISPLAY:
 
     bus = smbus.SMBus(1)     # using I2C
 
-    def display(s):
+    def display(s, lines):
         for k in '\x76\x79\x00' + s:     # position cursor at 0
             try:
                 bus.write_byte(0x71, ord(k))
@@ -421,9 +434,17 @@ if USE_I2C_7SEGMENTDISPLAY:
     display('----')
     time.sleep(0.5)
 
+if USE_HD44780DISPLAY:
+    execfile('peripherals/hd44780.py')
+    lcd_init()
+
+    def display(s, lines):
+        lcd_string(lines[0], LCD_LINE_1)
+        lcd_string(lines[1], LCD_LINE_2)
+
 else:
 
-    def display(s):
+    def display(s, l):
         pass
 
 
@@ -443,6 +464,7 @@ if USE_SERIALPORT_MIDI:
             i = 0
             while i < 3:
                 data = ord(ser.read(1))  # read a byte
+                print data
                 if data >> 7 != 0:
                     i = 0      # status byte!   this is the beginning of a midi message: http://www.midi.org/techspecs/midimessages.php
                 message[i] = data

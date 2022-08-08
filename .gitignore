@@ -1,0 +1,4 @@
+build/
+*.c
+*.so
+local_config.*

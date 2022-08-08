@@ -1,0 +1,11 @@
+[Unit]
+Description=Starts SamplerBox
+DefaultDependencies=false
+
+[Service]
+Type=simple
+ExecStart=/root/SamplerBox/samplerbox.sh
+WorkingDirectory=/root/SamplerBox/
+
+[Install]
+WantedBy=local-fs.target

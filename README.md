@@ -46,7 +46,7 @@ See the [FAQ](https://www.samplerbox.org/faq) on https://www.samplerbox.org.
 [ISO image](#isoimage)
 ----
 
-The ready-to-use ISO images available on [www.samplerbox.org](https://www.samplerbox.org) are built with the help of a script that can be found in `isoimage/samplerbox_iso_maker.sh`.
+The ready-to-use ISO images available on [www.samplerbox.org](https://www.samplerbox.org) are built with the help of a script that can be found in `isoimage/maker.sh`.
 
 
 [About](#about)
@@ -68,4 +68,4 @@ I am currently sponsored by [CodeSigningStore.com](https://codesigningstore.com)
 [License](#license)
 ----
 
-[Creative Commons BY-SA 3.0](http://creativecommons.org/licenses/by-sa/3.0/)
+[Creative Commons BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)

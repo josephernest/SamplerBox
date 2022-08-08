@@ -1,7 +1,9 @@
 #!/bin/bash -v
-# Start with a standard RaspiOS Lite, install SamplerBox on it, and create an image
-# Todo before:
-#   sudo apt update && sudo apt install -y kpartx parted zip
+# The script takes a standard RaspiOS Lite image, installs SamplerBox on it, and creates a ready-to-use image
+# Requirement before using: sudo apt update && sudo apt install -y kpartx parted zip
+#
+# SamplerBox (https://www.samplerbox.org)
+# License: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) (https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 set -e  # exit immediately if a command exits with a non-zero status
 # unzip 2021-05-07-raspios-buster-armhf-lite.zip

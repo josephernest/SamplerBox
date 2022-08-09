@@ -42,9 +42,9 @@ SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommende
     sudo python3 samplerbox.py
     ~~~
 
-4. Play some notes on the connected MIDI keyboard, you'll hear some sound!
+    Play some notes on the connected MIDI keyboard, you'll hear some sound!
 
-*(Optional)*  Modify `config.py` if you want to change root directory for sample-sets, default soundcard, etc.
+4. *(Optional)*  Modify `config.py` if you want to change root directory for sample-sets, default soundcard, etc.
 
 
 [How to use it](#howto)

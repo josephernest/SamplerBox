@@ -230,6 +230,14 @@ def MidiCallback(message, time_stamp):
     elif (messagetype == 11) and (note == 64) and (velocity >= 64):  # sustain pedal on
         sustain = True
 
+    elif (messagetype == 11) and (note == 123):  # all notes off
+        for i in playingnotes:
+            for n in playingnotes[i]:
+                if sustain:
+                    sustainplayingnotes.append(n)
+                else:
+                    n.fadeout(50)
+            playingnotes[i] = []
 
 #########################################
 # LOAD SAMPLES
@@ -320,6 +328,16 @@ def ActuallyLoad():
             if os.path.isfile(file):
                 samples[midinote, 127] = Sound(file, midinote, 127)
 
+
+    melodicProgram = True
+    configfname = os.path.join(dirname, "config.txt")
+    if os.path.isfile(configfname):
+        with open(configfname, 'r') as configfile:
+            for i, pattern in enumerate(configfile):
+                if r'melodic=false' in pattern:
+                    melodicProgram = False
+                                   
+
     initial_keys = set(samples.keys())
     for midinote in xrange(128):
         lastvelocity = None
@@ -331,7 +349,7 @@ def ActuallyLoad():
                     for v in xrange(velocity):
                         samples[midinote, v] = samples[midinote, velocity]
                 lastvelocity = samples[midinote, velocity]
-        if not lastvelocity:
+        if not lastvelocity and melodicProgram:
             for velocity in xrange(128):
                 try:
                     samples[midinote, velocity] = samples[midinote-1, velocity]

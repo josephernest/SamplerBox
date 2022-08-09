@@ -1,9 +1,9 @@
-dtoverlay=disable-bt
-device_tree_param=i2c_arm=on
 boot_delay=0
 disable_splash=1
 disable_audio_dither=1
+dtparam=i2c_arm=on
 dtparam=audio=on
-enable_uart=1
+dtoverlay=disable-bt
 dtoverlay=pi3-miniuart-bt
 dtoverlay=midi-uart0 
+enable_uart=1

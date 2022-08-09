@@ -27,7 +27,6 @@ SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommende
     sudo pip3 install cython rtmidi-python cffi sounddevice pyserial
     ~~~
     
-    
 2. Download SamplerBox and build it with:
 
     ~~~

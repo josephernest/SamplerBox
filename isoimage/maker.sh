@@ -22,7 +22,7 @@ echo root:root | chroot sdcard chpasswd
 chroot sdcard apt update
 chroot sdcard apt -y install git python3-pip python3-smbus python3-numpy libportaudio2 raspberrypi-kernel ntpdate
 chroot sdcard pip3 install cython rtmidi-python cffi sounddevice pyserial
-chroot sdcard sh -c "cd /root ; git clone https://github.com/josephernest/SamplerBox.git ; cd SamplerBox ; python setup.py build_ext --inplace"
+chroot sdcard sh -c "cd /root ; git clone https://github.com/josephernest/SamplerBox.git ; cd SamplerBox ; python3 setup.py build_ext --inplace"
 cp -R root/* sdcard
 chroot sdcard systemctl enable /etc/systemd/system/samplerbox.service
 chroot sdcard systemctl disable systemd-timesyncd systemd-rfkill hciuart raspi-config avahi-daemon resize2fs_once rpi-eeprom-update dphys-swapfile

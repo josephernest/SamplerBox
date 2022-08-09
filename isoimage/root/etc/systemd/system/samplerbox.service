@@ -1,11 +1,8 @@
 [Unit]
 Description=Starts SamplerBox
-DefaultDependencies=false
-
 [Service]
 Type=simple
-ExecStart=/root/SamplerBox/samplerbox.sh
+ExecStart=/usr/bin/python /root/SamplerBox/samplerbox.py
 WorkingDirectory=/root/SamplerBox/
-
 [Install]
-WantedBy=local-fs.target
+RequiredBy=basic.target

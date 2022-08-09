@@ -1,7 +1,5 @@
 dtoverlay=disable-bt
 device_tree_param=i2c_arm=on
-init_uart_clock=2441406
-init_uart_baud=38400
 boot_delay=0
 disable_splash=1
 disable_audio_dither=1

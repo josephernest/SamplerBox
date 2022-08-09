@@ -5,28 +5,15 @@
 #  url:       http://www.samplerbox.org/
 #  license:   Creative Commons ShareAlike 3.0 (http://creativecommons.org/licenses/by-sa/3.0/)
 #
-#  samplerbox.py: Main file
+#  samplerbox.py: Main file (now requiring at least Python 3.7)
 #
-
-
-#########################################
-# LOCAL
-# CONFIG
-#########################################
-
-AUDIO_DEVICE_ID = 2                     # change this number to use another soundcard
-SAMPLES_DIR = "."                       # The root directory containing the sample-sets. Example: "/media/" to look for samples on a USB stick / SD card
-USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
-USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C
-USE_BUTTONS = False                     # Set to True to use momentary buttons (connected to RaspberryPi's GPIO pins) to change preset
-MAX_POLYPHONY = 80                      # This can be set higher, but 80 is a safe value
-USE_SYSTEMLED = True
 
 #########################################
 # IMPORT
 # MODULES
 #########################################
 
+from config import *
 import wave
 import time
 import numpy
@@ -39,14 +26,12 @@ import struct
 import rtmidi_python as rtmidi
 import samplerbox_audio
 
-
 #########################################
 # SLIGHT MODIFICATION OF PYTHON'S WAVE MODULE
 # TO READ CUE MARKERS & LOOP MARKERS
 #########################################
 
 class waveread(wave.Wave_read):
-
     def initfp(self, file):
         self._convert = None
         self._soundpos = 0
@@ -54,10 +39,10 @@ class waveread(wave.Wave_read):
         self._loops = []
         self._ieee = False
         self._file = Chunk(file, bigendian=0)
-        if self._file.getname() != 'RIFF':
-            raise Error, 'file does not start with RIFF id'
-        if self._file.read(4) != 'WAVE':
-            raise Error, 'not a WAVE file'
+        if self._file.getname() != b'RIFF':
+            raise IOError('file does not start with RIFF id')
+        if self._file.read(4) != b'WAVE':
+            raise IOError('not a WAVE file')
         self._fmt_chunk_read = 0
         self._data_chunk = None
         while 1:
@@ -67,21 +52,21 @@ class waveread(wave.Wave_read):
             except EOFError:
                 break
             chunkname = chunk.getname()
-            if chunkname == 'fmt ':
+            if chunkname == b'fmt ':
                 self._read_fmt_chunk(chunk)
                 self._fmt_chunk_read = 1
-            elif chunkname == 'data':
+            elif chunkname == b'data':
                 if not self._fmt_chunk_read:
-                    raise Error, 'data chunk before fmt chunk'
+                    raise IOError('data chunk before fmt chunk')
                 self._data_chunk = chunk
                 self._nframes = chunk.chunksize // self._framesize
                 self._data_seek_needed = 0
-            elif chunkname == 'cue ':
+            elif chunkname == b'cue ':
                 numcue = struct.unpack('<i', chunk.read(4))[0]
                 for i in range(numcue):
                     id, position, datachunkid, chunkstart, blockstart, sampleoffset = struct.unpack('<iiiiii', chunk.read(24))
                     self._cue.append(sampleoffset)
-            elif chunkname == 'smpl':
+            elif chunkname == b'smpl':
                 manuf, prod, sampleperiod, midiunitynote, midipitchfraction, smptefmt, smpteoffs, numsampleloops, samplerdata = struct.unpack(
                     '<iiiiiiiii', chunk.read(36))
                 for i in range(numsampleloops):
@@ -89,7 +74,7 @@ class waveread(wave.Wave_read):
                     self._loops.append([start, end])
             chunk.skip()
         if not self._fmt_chunk_read or not self._data_chunk:
-            raise Error, 'fmt chunk and/or data chunk missing'
+            raise IOError('fmt chunk and/or data chunk missing')
 
     def getmarkers(self):
         return self._cue
@@ -97,14 +82,12 @@ class waveread(wave.Wave_read):
     def getloops(self):
         return self._loops
 
-
 #########################################
 # MIXER CLASSES
 #
 #########################################
 
 class PlayingSound:
-
     def __init__(self, sound, note):
         self.sound = sound
         self.pos = 0
@@ -121,9 +104,7 @@ class PlayingSound:
         except:
             pass
 
-
 class Sound:
-
     def __init__(self, filename, midinote, velocity):
         wf = waveread(filename)
         self.fname = filename
@@ -135,9 +116,7 @@ class Sound:
         else:
             self.loop = -1
             self.nframes = wf.getnframes()
-
         self.data = self.frames2array(wf.readframes(self.nframes), wf.getsampwidth(), wf.getnchannels())
-
         wf.close()
 
     def play(self, note):
@@ -147,9 +126,9 @@ class Sound:
 
     def frames2array(self, data, sampwidth, numchan):
         if sampwidth == 2:
-            npdata = numpy.fromstring(data, dtype=numpy.int16)
+            npdata = numpy.frombuffer(data, dtype=numpy.int16)
         elif sampwidth == 3:
-            npdata = samplerbox_audio.binary24_to_int16(data, len(data)/3)
+            npdata = samplerbox_audio.binary24_to_int16(data, len(data)//3)
         if numchan == 1:
             npdata = numpy.repeat(npdata, 2)
         return npdata
@@ -167,7 +146,6 @@ sustain = False
 playingsounds = []
 globalvolume = 10 ** (-12.0/20)  # -12dB default global volume
 globaltranspose = 0
-
 
 #########################################
 # AUDIO AND MIDI CALLBACKS
@@ -195,17 +173,14 @@ def MidiCallback(message, time_stamp):
     note = message[1] if len(message) > 1 else None
     midinote = note
     velocity = message[2] if len(message) > 2 else None
-
     if messagetype == 9 and velocity == 0:
         messagetype = 8
-
     if messagetype == 9:    # Note on
         midinote += globaltranspose
         try:
             playingnotes.setdefault(midinote, []).append(samples[midinote, velocity].play(midinote))
         except:
             pass
-
     elif messagetype == 8:  # Note off
         midinote += globaltranspose
         if midinote in playingnotes:
@@ -215,21 +190,17 @@ def MidiCallback(message, time_stamp):
                 else:
                     n.fadeout(50)
             playingnotes[midinote] = []
-
     elif messagetype == 12:  # Program change
-        print 'Program change ' + str(note)
+        print('Program change ' + str(note))
         preset = note
         LoadSamples()
-
     elif (messagetype == 11) and (note == 64) and (velocity < 64):  # sustain pedal off
         for n in sustainplayingnotes:
             n.fadeout(50)
         sustainplayingnotes = []
         sustain = False
-
     elif (messagetype == 11) and (note == 64) and (velocity >= 64):  # sustain pedal on
         sustain = True
-
 
 #########################################
 # LOAD SAMPLES
@@ -238,7 +209,6 @@ def MidiCallback(message, time_stamp):
 
 LoadingThread = None
 LoadingInterrupt = False
-
 
 def LoadSamples():
     global LoadingThread
@@ -256,7 +226,6 @@ def LoadSamples():
 
 NOTES = ["c", "c#", "d", "d#", "e", "f", "f#", "g", "g#", "a", "a#", "b"]
 
-
 def ActuallyLoad():
     global preset
     global samples
@@ -266,19 +235,16 @@ def ActuallyLoad():
     samples = {}
     globalvolume = 10 ** (-12.0/20)  # -12dB default global volume
     globaltranspose = 0
-
     samplesdir = SAMPLES_DIR if os.listdir(SAMPLES_DIR) else '.'      # use current folder (containing 0 Saw) if no user media containing samples has been found
-
     basename = next((f for f in os.listdir(samplesdir) if f.startswith("%d " % preset)), None)      # or next(glob.iglob("blah*"), None)
     if basename:
         dirname = os.path.join(samplesdir, basename)
     if not basename:
-        print 'Preset empty: %s' % preset
+        print('Preset empty: %s' % preset)
         display("E%03d" % preset)
         return
-    print 'Preset loading: %s (%s)' % (preset, basename)
+    print('Preset loading: %s (%s)' % (preset, basename))
     display("L%03d" % preset)
-
     definitionfname = os.path.join(dirname, "definition.txt")
     if os.path.isfile(definitionfname):
         with open(definitionfname, 'r') as definitionfile:
@@ -294,9 +260,9 @@ def ActuallyLoad():
                     if len(pattern.split(',')) > 1:
                         defaultparams.update(dict([item.split('=') for item in pattern.split(',', 1)[1].replace(' ', '').replace('%', '').split(',')]))
                     pattern = pattern.split(',')[0]
-                    pattern = re.escape(pattern.strip())
-                    pattern = pattern.replace(r"\%midinote", r"(?P<midinote>\d+)").replace(r"\%velocity", r"(?P<velocity>\d+)")\
-                                     .replace(r"\%notename", r"(?P<notename>[A-Ga-g]#?[0-9])").replace(r"\*", r".*?").strip()    # .*? => non greedy
+                    pattern = re.escape(pattern.strip())  # note for Python 3.7+: "%" is no longer escaped with "\"
+                    pattern = pattern.replace(r"%midinote", r"(?P<midinote>\d+)").replace(r"%velocity", r"(?P<velocity>\d+)")\
+                                     .replace(r"%notename", r"(?P<notename>[A-Ga-g]#?[0-9])").replace(r"\*", r".*?").strip()    # .*? => non greedy
                     for fname in os.listdir(dirname):
                         if LoadingInterrupt:
                             return
@@ -310,8 +276,7 @@ def ActuallyLoad():
                                 midinote = NOTES.index(notename[:-1].lower()) + (int(notename[-1])+2) * 12
                             samples[midinote, velocity] = Sound(os.path.join(dirname, fname), midinote, velocity)
                 except:
-                    print "Error in definition file, skipping line %s." % (i+1)
-
+                    print("Error in definition file, skipping line %s." % (i+1))
     else:
         for midinote in range(0, 127):
             if LoadingInterrupt:
@@ -319,31 +284,29 @@ def ActuallyLoad():
             file = os.path.join(dirname, "%d.wav" % midinote)
             if os.path.isfile(file):
                 samples[midinote, 127] = Sound(file, midinote, 127)
-
     initial_keys = set(samples.keys())
-    for midinote in xrange(128):
+    for midinote in range(128):
         lastvelocity = None
-        for velocity in xrange(128):
+        for velocity in range(128):
             if (midinote, velocity) not in initial_keys:
                 samples[midinote, velocity] = lastvelocity
             else:
                 if not lastvelocity:
-                    for v in xrange(velocity):
+                    for v in range(velocity):
                         samples[midinote, v] = samples[midinote, velocity]
                 lastvelocity = samples[midinote, velocity]
         if not lastvelocity:
-            for velocity in xrange(128):
+            for velocity in range(128):
                 try:
                     samples[midinote, velocity] = samples[midinote-1, velocity]
                 except:
                     pass
     if len(initial_keys) > 0:
-        print 'Preset loaded: ' + str(preset)
+        print('Preset loaded: ' + str(preset))
         display("%04d" % preset)
     else:
-        print 'Preset empty: ' + str(preset)
+        print('Preset empty: ' + str(preset))
         display("E%03d" % preset)
-
 
 #########################################
 # OPEN AUDIO DEVICE
@@ -353,11 +316,10 @@ def ActuallyLoad():
 try:
     sd = sounddevice.OutputStream(device=AUDIO_DEVICE_ID, blocksize=512, samplerate=44100, channels=2, dtype='int16', callback=AudioCallback)
     sd.start()
-    print 'Opened audio device #%i' % AUDIO_DEVICE_ID
+    print('Opened audio device #%i' % AUDIO_DEVICE_ID)
 except:
-    print 'Invalid audio device #%i' % AUDIO_DEVICE_ID
+    print('Invalid audio device #%i' % AUDIO_DEVICE_ID)
     exit(1)
-
 
 #########################################
 # BUTTONS THREAD (RASPBERRY PI GPIO)
@@ -366,9 +328,7 @@ except:
 
 if USE_BUTTONS:
     import RPi.GPIO as GPIO
-
     lastbuttontime = 0
-
     def Buttons():
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(18, GPIO.IN, pull_up_down=GPIO.PUD_UP)
@@ -382,20 +342,16 @@ if USE_BUTTONS:
                 if preset < 0:
                     preset = 127
                 LoadSamples()
-
             elif not GPIO.input(17) and (now - lastbuttontime) > 0.2:
                 lastbuttontime = now
                 preset += 1
                 if preset > 127:
                     preset = 0
                 LoadSamples()
-
             time.sleep(0.020)
-
     ButtonsThread = threading.Thread(target=Buttons)
     ButtonsThread.daemon = True
     ButtonsThread.start()
-
 
 #########################################
 # 7-SEGMENT DISPLAY
@@ -404,9 +360,7 @@ if USE_BUTTONS:
 
 if USE_I2C_7SEGMENTDISPLAY:
     import smbus
-
     bus = smbus.SMBus(1)     # using I2C
-
     def display(s):
         for k in '\x76\x79\x00' + s:     # position cursor at 0
             try:
@@ -417,15 +371,11 @@ if USE_I2C_7SEGMENTDISPLAY:
                 except:
                     pass
             time.sleep(0.002)
-
     display('----')
     time.sleep(0.5)
-
 else:
-
     def display(s):
         pass
-
 
 #########################################
 # MIDI IN via SERIAL PORT
@@ -434,9 +384,7 @@ else:
 
 if USE_SERIALPORT_MIDI:
     import serial
-
-    ser = serial.Serial('/dev/ttyAMA0', baudrate=38400)       # see hack in /boot/cmline.txt : 38400 is 31250 baud for MIDI!
-
+    ser = serial.Serial('/dev/ttyAMA0', baudrate=31250)
     def MidiSerialCallback():
         message = [0, 0, 0]
         while True:
@@ -451,11 +399,9 @@ if USE_SERIALPORT_MIDI:
                     message[2] = 0
                     i = 3
             MidiCallback(message, None)
-
     MidiThread = threading.Thread(target=MidiSerialCallback)
     MidiThread.daemon = True
     MidiThread.start()
-
 
 #########################################
 # LOAD FIRST SOUNDBANK
@@ -466,7 +412,7 @@ preset = 0
 LoadSamples()
 
 #########################################
-# System Led
+# SYSTEM LED
 #
 #########################################
 if USE_SYSTEMLED:
@@ -478,14 +424,14 @@ if USE_SYSTEMLED:
 # MAIN LOOP
 #########################################
 
-midi_in = [rtmidi.MidiIn()]
+midi_in = [rtmidi.MidiIn(b'in')]
 previous = []
 while True:
     for port in midi_in[0].ports:
-        if port not in previous and 'Midi Through' not in port:
-            midi_in.append(rtmidi.MidiIn())
+        if port not in previous and b'Midi Through' not in port:
+            midi_in.append(rtmidi.MidiIn(b'in'))
             midi_in[-1].callback = MidiCallback
             midi_in[-1].open_port(port)
-            print 'Opened MIDI: ' + port
+            print('Opened MIDI: ' + str(port))
     previous = midi_in[0].ports
     time.sleep(2)

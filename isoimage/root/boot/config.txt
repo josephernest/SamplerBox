@@ -4,3 +4,6 @@ boot_delay=0
 disable_splash=1
 disable_audio_dither=1
 dtparam=audio=on
+enable_uart=1
+dtoverlay=pi3-miniuart-bt
+dtoverlay=midi-uart0 

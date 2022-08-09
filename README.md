@@ -23,7 +23,7 @@ SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommende
     ~~~
     sudo apt update
     sudo apt -y install git python3-pip python3-smbus python3-numpy libportaudio2 
-    sudo apt -y install raspberrypi-kernel  # this one is quite long to install, do it only if necessary, it solves a "no sound before 25 second on boot" problem
+    sudo apt -y install raspberrypi-kernel  # quite long to install, do it only if necessary, it solves a "no sound before 25 second on boot" problem
     sudo pip3 install cython rtmidi-python cffi sounddevice pyserial
     ~~~
     
@@ -36,7 +36,11 @@ SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommende
     sudo python3 setup.py build_ext --inplace
     ~~~
 
-3. Run the soft with `sudo python3 samplerbox.py`.
+3. Reboot the Pi, and run the soft with: 
+    
+    ~~~
+    sudo python3 samplerbox.py
+    ~~~
 
 4. Play some notes on the connected MIDI keyboard, you'll hear some sound!
 

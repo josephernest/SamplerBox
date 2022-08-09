@@ -53,7 +53,8 @@ See the [FAQ](https://www.samplerbox.org/faq) on https://www.samplerbox.org.
 A few remarks:
 
 * the current version also works on Windows if all the required modules are installed
-* MIDI via GPIO/serial should be re-tested with the current version, see https://github.com/josephernest/SamplerBox/issues/49.
+* MIDI via GPIO/serial should be re-tested with the current version, see https://github.com/josephernest/SamplerBox/issues/49
+* 7-segment display confirmed working as of 2022-08-09, see [requirement](https://github.com/josephernest/SamplerBox/blob/916ae0a5504b0ce757d89e2ece4c65efb60b6d91/samplerbox.py#L361)
 
 # ISO image
 

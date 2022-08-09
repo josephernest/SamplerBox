@@ -1,0 +1,7 @@
+[Unit]
+Description=Mount USB Drive on %i
+[Service]
+Type=oneshot
+RemainAfterExit=true
+ExecStart=/root/usb-mount.sh add %i
+ExecStop=/root/usb-mount.sh remove %i

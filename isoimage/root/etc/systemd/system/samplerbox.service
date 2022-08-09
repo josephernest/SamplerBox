@@ -2,7 +2,7 @@
 Description=Starts SamplerBox
 [Service]
 Type=simple
-ExecStart=/usr/bin/python /root/SamplerBox/samplerbox.py
+ExecStart=/usr/bin/python3 /root/SamplerBox/samplerbox.py
 WorkingDirectory=/root/SamplerBox/
 [Install]
 RequiredBy=basic.target

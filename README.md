@@ -16,6 +16,8 @@ Website: [www.samplerbox.org](https://www.samplerbox.org)
 
 SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (PCM2704 USB DAC for less than 10€ on eBay is fine) for better sound quality.
 
+0. Start with a standard RaspiOS intsall. The following steps have been tested with [2021-05-07-raspios-buster-armhf-lite.zip](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-05-28/2021-05-07-raspios-buster-armhf-lite.zip).
+
 1. Install the required dependencies (Python-related packages and audio libraries - the current version requires at least Python 3.7):
 
     ~~~

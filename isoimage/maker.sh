@@ -1,5 +1,6 @@
 #!/bin/bash -v
 # The script takes a standard RaspiOS Lite image, installs SamplerBox on it, and creates a ready-to-use image
+# (This script works on Pi4 but not on Pi2 - tested 2022-08-09)
 #
 # SamplerBox (https://www.samplerbox.org)
 # License: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) (https://creativecommons.org/licenses/by-nc-sa/4.0/)

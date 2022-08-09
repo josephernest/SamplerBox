@@ -37,6 +37,5 @@ umount -v sdcard/boot
 umount -v sdcard
 kpartx -dv sb.img
 sync
-dd if=sb.img of=/dev/sdd bs=4M status=progress
 zip sb.zip sb.img
 exit 0

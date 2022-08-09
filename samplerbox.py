@@ -358,7 +358,7 @@ if USE_BUTTONS:
 #
 #########################################
 
-if USE_I2C_7SEGMENTDISPLAY:
+if USE_I2C_7SEGMENTDISPLAY:  # requires: 1) i2c-dev in /etc/modules and 2) dtparam=i2c_arm=on in /boot/config.txt
     import smbus
     bus = smbus.SMBus(1)     # using I2C
     def display(s):

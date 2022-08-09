@@ -1,26 +1,26 @@
 #!/bin/bash -v
 # The script takes a standard RaspiOS Lite image, installs SamplerBox on it, and creates a ready-to-use image
-# Requirement before using: sudo apt update && sudo apt install -y kpartx parted zip
 #
 # SamplerBox (https://www.samplerbox.org)
 # License: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) (https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
 set -e  # exit immediately if a command exits with a non-zero status
-# unzip 2021-05-07-raspios-buster-armhf-lite.zip
+apt install -y kpartx parted zip
+[ ! -f "2021-05-07-raspios-buster-armhf-lite.zip" ] && wget https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-05-28/2021-05-07-raspios-buster-armhf-lite.zip
+[ ! -f "2021-05-07-raspios-buster-armhf-lite.img" ] && unzip 2021-05-07-raspios-buster-armhf-lite.zip
 cp 2021-05-07-raspios-buster-armhf-lite.img sb.img
-truncate -s 2500M sb.img      #  M=power of 1024
+truncate -s 2500M sb.img      # M=1024*1024
 kpartx -av sb.img
-parted -m /dev/loop0 resizepart 2 2499MiB
+parted -m /dev/loop0 resizepart 2 2499MiB  # MiB=1024*1024
 kpartx -uv /dev/loop0
-e2fsck -f /dev/mapper/loop0p2
-resize2fs /dev/mapper/loop0p2     # enlarge partition
+resize2fs /dev/mapper/loop0p2     # enlarge partition  # e2fsck -f /dev/mapper/loop0p2
 mkdir -v -p sdcard
 mount -v -t ext4 -o sync /dev/mapper/loop0p2 sdcard
 mount -v -t vfat -o sync /dev/mapper/loop0p1 sdcard/boot
 echo root:root | chroot sdcard chpasswd
 chroot sdcard apt update
-chroot sdcard apt install -y build-essential python-dev python-pip cython python-smbus python-numpy python-rpi.gpio python-serial alsa-utils git libportaudio2 libffi-dev raspberrypi-kernel ntpdate
-chroot sdcard pip install rtmidi-python pyaudio cffi sounddevice
+chroot sdcard apt -y install git python3-pip python3-smbus python3-numpy libportaudio2 raspberrypi-kernel ntpdate
+chroot sdcard pip3 install cython rtmidi-python cffi sounddevice pyserial
 chroot sdcard sh -c "cd /root ; git clone https://github.com/josephernest/SamplerBox.git ; cd SamplerBox ; python setup.py build_ext --inplace"
 cp -R root/* sdcard
 chroot sdcard systemctl enable /etc/systemd/system/samplerbox.service

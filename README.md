@@ -1,5 +1,4 @@
-SamplerBox
-==========
+# SamplerBox
 
 *Update: [Remove drums from song](https://www.yellownoiseaudio.com) with the VST DrumExtract!*
 
@@ -11,8 +10,7 @@ Website: [www.samplerbox.org](https://www.samplerbox.org)
 
 [![](https://gget.it/flurexml/1.jpg)](https://www.youtube.com/watch?v=yz7GZ8YOjTw)
 
-[Install](#install)
-----
+# Install
 
 SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (PCM2704 USB DAC for less than 10€ on eBay is fine) for better sound quality.
 
@@ -46,28 +44,26 @@ SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommende
 4. *(Optional)*  Modify `config.py` if you want to change root directory for sample-sets, default soundcard, etc.
 
 
-[How to use it](#howto)
-----
+# How to use it
 
 See the [FAQ](https://www.samplerbox.org/faq) on https://www.samplerbox.org.
 
-Note: the current version also works on Windows if all the required modules are installed.
+# Notes
 
+A few remarks:
 
-[ISO image](#isoimage)
-----
+* the current version also works on Windows if all the required modules are installed
+* MIDI via GPIO/serial should be re-tested with the current version, see https://github.com/josephernest/SamplerBox/issues/49.
+
+# ISO image
 
 The ready-to-use ISO images available on [www.samplerbox.org](https://www.samplerbox.org) are built with the help of a script that can be found in `isoimage/maker.sh`.
 
-
-[About](#about)
-----
+# About
 
 Author : Joseph Ernest (twitter: [@JosephErnest](https:/twitter.com/JosephErnest), mail: [contact@samplerbox.org](mailto:contact@samplerbox.org))
 
-
-[Sponsors and consulting](#sponsors)
-----
+# Sponsors and consulting
 
 I am available for Python, Data science, ML, Automation **consulting**. Please contact me on https://afewthingz.com for freelancing requests.
 
@@ -75,8 +71,6 @@ Do you want to support the development of my open-source projects? Please contac
 
 I am currently sponsored by [CodeSigningStore.com](https://codesigningstore.com). Thank you to them for providing a DigiCert Code Signing Certificate and supporting open source software.
 
-
-[License](#license)
-----
+# License
 
 [Creative Commons BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/)

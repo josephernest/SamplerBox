@@ -21,11 +21,13 @@ SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommende
 1. Install the required dependencies (Python-related packages and audio libraries - the current version requires at least Python 3.7):
 
     ~~~
-    sudo apt-get update
-    sudo apt-get -y install git python3-pip python3-smbus python3-numpy libportaudio2 raspberrypi-kernel
+    sudo apt update
+    sudo apt -y install git python3-pip python3-smbus python3-numpy libportaudio2 
+    sudo apt -y install raspberrypi-kernel  # this one is quite long to install, do it only if necessary, it solves a "no sound before 25 second on boot" problem
     sudo pip3 install cython rtmidi-python cffi sounddevice pyserial
     ~~~
-
+    
+    
 2. Download SamplerBox and build it with:
 
     ~~~

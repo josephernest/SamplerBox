@@ -12,7 +12,9 @@ Website: [www.samplerbox.org](https://www.samplerbox.org)
 
 # Install
 
-SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (PCM2704 USB DAC for less than 10€ on eBay is fine) for better sound quality.
+SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (PCM2704 USB DAC for less than 10€ on eBay is fine) for better sound quality. 
+
+You can use a ready-to-use ISO image from the [Releases](https://github.com/josephernest/SamplerBox/releases) page or do a manual install:
 
 0. Start with a standard RaspiOS intsall. The following steps have been tested with [2021-05-07-raspios-buster-armhf-lite.zip](https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-05-28/2021-05-07-raspios-buster-armhf-lite.zip).
 

@@ -2,7 +2,7 @@
 # The script takes a standard RaspiOS Lite image, installs SamplerBox on it, and creates a ready-to-use image.
 # Notes: 
 # * this script works on Pi4 but not on Pi2 - tested 2022-08-09
-# * the process is quite long, ~ 1 hour on a Pi4 - for this reason, I usually start it from screen (screen -S maker, sudo ./maker.sh, CTRL A D to detach)
+# * the process is quite long, 1 hr 40 min on a Pi4 - for this reason, I usually start it from screen (screen -S maker, sudo ./maker.sh, CTRL A D to detach)
 #
 # SamplerBox (https://www.samplerbox.org)
 # License: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) (https://creativecommons.org/licenses/by-nc-sa/4.0/)

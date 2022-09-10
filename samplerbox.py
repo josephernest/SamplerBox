@@ -23,7 +23,7 @@ import sounddevice
 import threading
 from chunk import Chunk
 import struct
-import rtmidi_python as rtmidi
+import rtmidi
 import samplerbox_audio
 
 #########################################
@@ -424,14 +424,29 @@ if USE_SYSTEMLED:
 # MAIN LOOP
 #########################################
 
-midi_in = [rtmidi.MidiIn(b'in')]
-previous = []
-while True:
-    for port in midi_in[0].ports:
-        if port not in previous and b'Midi Through' not in port:
-            midi_in.append(rtmidi.MidiIn(b'in'))
-            midi_in[-1].callback = MidiCallback
-            midi_in[-1].open_port(port)
-            print('Opened MIDI: ' + str(port))
-    previous = midi_in[0].ports
-    time.sleep(2)
+midiin = rtmidi.MidiIn()
+
+if midiin.get_current_api() == rtmidi.API_UNIX_JACK:
+    print("Using JACK API for MIDI input.")
+
+if midiin.get_current_api() == rtmidi.API_LINUX_ALSA:
+    print("Using ALSA API for MIDI input.")
+
+ports = midiin.get_port_count()
+print('MIDI Port count: ' + str(ports))
+
+# collect all devices which are found
+# previous = []
+
+midiin.set_callback = MidiCallback
+midiin.open_port(0)
+print('Opened MIDI: ' + str(midiin.get_port_name(0)))
+# while True:
+    # for port in midi_in[0].ports:
+        # if port not in previous and b'Midi Through' not in port:
+            # midi_in.append(rtmidi.MidiIn(b'in'))
+            # midi_in[-1].callback = MidiCallback
+            # midi_in[-1].open_port(port)
+            # print('Opened MIDI: ' + str(port))
+    # previous = midi_in[0].ports
+    # time.sleep(2)

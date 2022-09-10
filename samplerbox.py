@@ -165,23 +165,31 @@ def AudioCallback(outdata, frame_count, time_info, status):
     b *= globalvolume
     outdata[:] = b.reshape(outdata.shape)
 
-def MidiCallback(message, time_stamp):
+def MidiCallback(message_t, time_stamp):
     global playingnotes, sustain, sustainplayingnotes
     global preset
+    # for details on MIDI Protocol see https://www.midi.org/specifications-old/item/table-1-summary-of-midi-message
+    
+    message = message_t[0]
+    # split status bits (bin, 0b0000-0b1111) and MIDI channel number (dec, 1-16)
     messagetype = message[0] >> 4
-    messagechannel = (message[0] & 15) + 1
+    messagechannel = (message[0] & 0b00001111) + 1
+    
+    # read note and velocity depending on message length
     note = message[1] if len(message) > 1 else None
     midinote = note
     velocity = message[2] if len(message) > 2 else None
+    
+    # interpret messagetype
     if messagetype == 9 and velocity == 0:
         messagetype = 8
-    if messagetype == 9:    # Note on
+    if messagetype == 9:    # 0b1001: Note on
         midinote += globaltranspose
         try:
             playingnotes.setdefault(midinote, []).append(samples[midinote, velocity].play(midinote))
         except:
             pass
-    elif messagetype == 8:  # Note off
+    elif messagetype == 8:  # 0b1000: Note off
         midinote += globaltranspose
         if midinote in playingnotes:
             for n in playingnotes[midinote]:
@@ -190,16 +198,16 @@ def MidiCallback(message, time_stamp):
                 else:
                     n.fadeout(50)
             playingnotes[midinote] = []
-    elif messagetype == 12:  # Program change
+    elif messagetype == 12:  # 0b1100: Program change
         print('Program change ' + str(note))
         preset = note
         LoadSamples()
-    elif (messagetype == 11) and (note == 64) and (velocity < 64):  # sustain pedal off
+    elif (messagetype == 11) and (note == 64) and (velocity < 64):  # 0b1011: sustain pedal off
         for n in sustainplayingnotes:
             n.fadeout(50)
         sustainplayingnotes = []
         sustain = False
-    elif (messagetype == 11) and (note == 64) and (velocity >= 64):  # sustain pedal on
+    elif (messagetype == 11) and (note == 64) and (velocity >= 64):  # 0b1011: sustain pedal on
         sustain = True
 
 #########################################
@@ -424,24 +432,20 @@ if USE_SYSTEMLED:
 # MAIN LOOP
 #########################################
 
-midiin = [rtmidi.MidiIn(name=b'rtmidi in')]
+midi_in = [rtmidi.MidiIn(name=b'rtmidi in')]
 
-if midiin[0].get_current_api() == rtmidi.API_LINUX_ALSA:
+if midi_in[0].get_current_api() == rtmidi.API_LINUX_ALSA:
     print("Using ALSA API for MIDI input.")
-else:
-    print("NOT using ALSA API for MIDI input!")
-
-print('MIDI Port count: ' + str(midiin[0].get_port_count()))
 
 # collect all available device port numbers
-previous = []
+previousPorts = []
 
 while True:
-    for port, name in enumerate(midiin[0].get_ports()):
-        if port not in previous and "Midi Through" not in name:
-            midiin.append(rtmidi.MidiIn(name=b'rtmidi in'))
-            midiin[-1].set_callback(MidiCallback)
-            midiin[-1].open_port(port)
+    for port, name in enumerate(midi_in[0].get_ports()):
+        if port not in previousPorts and "Midi Through" not in name:
+            midi_in.append(rtmidi.MidiIn(name=b'rtmidi in'))
+            midi_in[-1].set_callback(MidiCallback)
+            midi_in[-1].open_port(port)
             print('Opened MIDI ' + str(name) + ' on port ' + str(port))
-    previous = range(midiin[0].get_port_count()-1)
+    previousPorts = [*range(midi_in[0].get_port_count())]
     time.sleep(2)

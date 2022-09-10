@@ -426,7 +426,7 @@ if USE_SYSTEMLED:
 
 midiin = [rtmidi.MidiIn(name=b'rtmidi in')]
 
-if midiin[1].get_current_api() == rtmidi.API_LINUX_ALSA:
+if midiin[0].get_current_api() == rtmidi.API_LINUX_ALSA:
     print("Using ALSA API for MIDI input.")
 else:
     print("NOT using ALSA API for MIDI input!")
@@ -437,11 +437,11 @@ print('MIDI Port count: ' + str(midiin.get_port_count()))
 previous = []
 
 while True:
-    for port, name in enumerate(midiin[1].get_ports()):
+    for port, name in enumerate(midiin[0].get_ports()):
         if port not in previous and b'Midi Through' not in name:
             midiin.append(rtmidi.MidiIn(name=b'rtmidi in'))
             midiin[-1].set_callback(MidiCallback)
             midiin[-1].open_port(port)
             print('Opened MIDI ' + str(name) + ' on port ' + str(port))
-    previous = range(midiin[1].get_port_count()-1)
+    previous = range(midiin[0].get_port_count()-1)
     time.sleep(2)

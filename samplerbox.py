@@ -424,32 +424,24 @@ if USE_SYSTEMLED:
 # MAIN LOOP
 #########################################
 
-midiin = rtmidi.MidiIn()
-
-if midiin.get_current_api() == rtmidi.API_UNIX_JACK:
-    print("Using JACK API for MIDI input.")
+midiin = [rtmidi.MidiIn(name=b'rtmidi in')]
 
 if midiin.get_current_api() == rtmidi.API_LINUX_ALSA:
     print("Using ALSA API for MIDI input.")
+else:
+    print("NOT using ALSA API for MIDI input!")
 
-ports = midiin.get_port_count()
-print('MIDI Port count: ' + str(ports))
+print('MIDI Port count: ' + str(midiin.get_port_count()))
 
-# collect all devices which are found
-# previous = []
-
-midiin.set_callback(MidiCallback)
-midiin.open_port(0)
-print('Opened MIDI: ' + str(midiin.get_port_name(0)))
+# collect all available device port numbers
+previous = []
 
 while True:
+    for port, name in enumerate(midiin.get_ports()):
+        if port not in previous and b'Midi Through' not in name:
+            midiin.append(rtmidi.MidiIn(name=b'rtmidi in'))
+            midiin[-1].set_callback(MidiCallback)
+            midiin[-1].open_port(port)
+            print('Opened MIDI ' + str(name) + ' on port ' + str(port))
+    previous = range(midiin.get_port_count()-1)
     time.sleep(2)
-# while True:
-    # for port in midi_in[0].ports:
-        # if port not in previous and b'Midi Through' not in port:
-            # midi_in.append(rtmidi.MidiIn(b'in'))
-            # midi_in[-1].callback = MidiCallback
-            # midi_in[-1].open_port(port)
-            # print('Opened MIDI: ' + str(port))
-    # previous = midi_in[0].ports
-    # time.sleep(2)

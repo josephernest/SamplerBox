@@ -438,9 +438,12 @@ print('MIDI Port count: ' + str(ports))
 # collect all devices which are found
 # previous = []
 
-midiin.set_callback = MidiCallback
+midiin.set_callback(MidiCallback)
 midiin.open_port(0)
 print('Opened MIDI: ' + str(midiin.get_port_name(0)))
+
+while True:
+    time.sleep(2)
 # while True:
     # for port in midi_in[0].ports:
         # if port not in previous and b'Midi Through' not in port:

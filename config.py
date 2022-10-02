@@ -10,3 +10,5 @@ USE_BUTTONS = False                     # Set to True to use momentary buttons (
 USE_I2C_7SEGMENTDISPLAY = False         # Set to True to use a 7-segment display via I2C
 USE_SERIALPORT_MIDI = False             # Set to True to enable MIDI IN via SerialPort (e.g. RaspberryPi's GPIO UART pins)
 USE_SYSTEMLED = False                   # Flashing LED after successful boot, only works on RPi/Linux
+SERIALPORT_PORT = '/dev/ttyAMA0'
+SERIALPORT_BAUDRATE = 31250

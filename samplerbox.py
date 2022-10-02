@@ -384,7 +384,7 @@ else:
 
 if USE_SERIALPORT_MIDI:
     import serial
-    ser = serial.Serial('/dev/ttyAMA0', baudrate=31250)
+    ser = serial.Serial(SERIALPORT_PORT, baudrate=SERIALPORT_BAUDRATE)
     def MidiSerialCallback():
         message = [0, 0, 0]
         while True:

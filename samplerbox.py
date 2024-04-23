@@ -23,7 +23,12 @@ import sounddevice
 import threading
 from chunk import Chunk
 import struct
-import rtmidi_python as rtmidi
+try:
+    import rtmidi_python as rtmidi
+    RTMIDI = False
+except ModuleNotFoundError:
+    import rtmidi
+    RTMIDI = True
 import samplerbox_audio
 
 #########################################
@@ -165,7 +170,18 @@ def AudioCallback(outdata, frame_count, time_info, status):
     b *= globalvolume
     outdata[:] = b.reshape(outdata.shape)
 
-def MidiCallback(message, time_stamp):
+
+def midi_callback(message, data=None):
+    message, deltatime = message
+
+    return midi_callback_common(message, None)
+
+
+def MidiCallback(message, timestamp):
+    return midi_callback_common(message, timestamp)
+
+
+def midi_callback_common(message, timestamp):
     global playingnotes, sustain, sustainplayingnotes
     global preset
     messagetype = message[0] >> 4
@@ -424,14 +440,27 @@ if USE_SYSTEMLED:
 # MAIN LOOP
 #########################################
 
-midi_in = [rtmidi.MidiIn(b'in')]
-previous = []
-while True:
-    for port in midi_in[0].ports:
-        if port not in previous and b'Midi Through' not in port:
-            midi_in.append(rtmidi.MidiIn(b'in'))
-            midi_in[-1].callback = MidiCallback
-            midi_in[-1].open_port(port)
-            print('Opened MIDI: ' + str(port))
-    previous = midi_in[0].ports
-    time.sleep(2)
+if RTMIDI:
+    midi_in = [rtmidi.MidiIn()]
+    previous = []
+    while True:
+        for num_port, port in enumerate(midi_in[0].get_ports()):
+            if port not in previous and 'Midi Through' not in port:
+                midi_in.append(rtmidi.MidiIn())
+                midi_in[-1].set_callback(midi_callback)
+                midi_in[-1].open_port(num_port)
+                print('Opened MIDI: ' + str(port))
+        previous = midi_in[0].get_ports()
+        time.sleep(2)
+else:
+    midi_in = [rtmidi.MidiIn(b'in')]
+    previous = []
+    while True:
+        for port in midi_in[0].ports:
+            if port not in previous and b'Midi Through' not in port:
+                midi_in.append(rtmidi.MidiIn(b'in'))
+                midi_in[-1].callback = MidiCallback
+                midi_in[-1].open_port(port)
+                print('Opened MIDI: ' + str(port))
+        previous = midi_in[0].ports
+        time.sleep(2)

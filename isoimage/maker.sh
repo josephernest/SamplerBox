@@ -1,6 +1,6 @@
 #!/bin/bash -v
 # The script takes a standard RaspiOS Lite image, installs SamplerBox on it, and creates a ready-to-use image.
-# Notes: 
+# Notes:
 # * this script works on Pi4 but not on Pi2 - tested 2022-08-09
 # * the process is quite long, 1 hr 40 min on a Pi4 - for this reason, I usually start it from screen (screen -S maker, sudo ./maker.sh, CTRL A D to detach)
 #
@@ -22,9 +22,8 @@ mount -v -t ext4 -o sync /dev/mapper/loop0p2 sdcard
 mount -v -t vfat -o sync /dev/mapper/loop0p1 sdcard/boot
 echo root:root | chroot sdcard chpasswd
 chroot sdcard apt update
-chroot sdcard apt -y install git python3-pip python3-smbus python3-numpy libportaudio2 raspberrypi-kernel ntpdate
-chroot sdcard pip3 install cython rtmidi-python cffi sounddevice pyserial
-chroot sdcard sh -c "cd /root ; git clone https://github.com/josephernest/SamplerBox.git ; cd SamplerBox ; python3 setup.py build_ext --inplace"
+chroot sdcard apt -y install git python3-pip libportaudio2 raspberrypi-kernel ntpdate libasound2-dev libopenblas-dev
+chroot sdcard sh -c "cd /root ; git clone https://github.com/josephernest/SamplerBox.git ; cd SamplerBox ; python3 -m pip install ."
 cp -R root/* sdcard
 chroot sdcard chmod +x /root/usb-mount.sh
 chroot sdcard systemctl enable /etc/systemd/system/samplerbox.service

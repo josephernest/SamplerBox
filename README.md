@@ -12,7 +12,7 @@ Website: [www.samplerbox.org](https://www.samplerbox.org)
 
 # Install
 
-SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (PCM2704 USB DAC for less than 10€ on eBay is fine) for better sound quality. 
+SamplerBox works with the RaspberryPi's built-in soundcard, but it is recommended to use a USB DAC (PCM2704 USB DAC for less than 10€ on eBay is fine) for better sound quality.
 
 You can use a ready-to-use ISO image from the [Releases](https://github.com/josephernest/SamplerBox/releases) page or do a manual install:
 
@@ -22,28 +22,26 @@ You can use a ready-to-use ISO image from the [Releases](https://github.com/jose
 
     ~~~
     sudo apt update
-    sudo apt -y install git python3-pip python3-smbus python3-numpy libportaudio2 
+    sudo apt -y install git python3-pip libportaudio2 libopenblas-dev
     sudo apt -y install raspberrypi-kernel  # quite long to install, do it only if necessary, it solves a "no sound before 25 second on boot" problem
-    sudo pip3 install cython rtmidi-python cffi sounddevice pyserial
     ~~~
-    
-2. Download SamplerBox and build it with:
 
+1. Download SamplerBox and build it with:
     ~~~
     git clone https://github.com/josephernest/SamplerBox.git
     cd SamplerBox
-    sudo python3 setup.py build_ext --inplace
+    sudo python3 -m pip install .
     ~~~
 
-3. Reboot the Pi, and run the soft with: 
-    
+1. Reboot the Pi, and run the soft with:
+
     ~~~
     sudo python3 samplerbox.py
     ~~~
 
     Play some notes on the connected MIDI keyboard, you'll hear some sound!
 
-4. *(Optional)*  Modify `config.py` if you want to change root directory for sample-sets, default soundcard, etc.
+1. *(Optional)*  Modify `config.py` if you want to change root directory for sample-sets, default soundcard, etc.
 
 
 # How to use it

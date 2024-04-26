@@ -64,12 +64,12 @@ A few remarks:
 
 The ready-to-use ISO images available on [www.samplerbox.org](https://www.samplerbox.org) are built with the help of a script that can be found in `isoimage/maker.sh`.
 
-# Other platforms
+# Platforms
 
 * SamplerBox has been primarily made for Raspberry Pi / RaspiOS
 * It also works more generally on major Linux distributions
-* It also works on Windows, but you are a bit on your own ;)
-     Ex: to install the dependency `rtmidi-python`, you have to do: `pip install cython`, `git clone https://github.com/SamplerBox/rtmidi-python.git`, `cd rtmidi-python`, `python setup.py install`.
+* It also works on Windows, but you are a bit on your own with no support ;)
+     Example: to install the dependency `rtmidi-python`, you have to do: `pip install cython`, `git clone https://github.com/SamplerBox/rtmidi-python.git`, `cd rtmidi-python`, `python setup.py install`.
 
 # About
 

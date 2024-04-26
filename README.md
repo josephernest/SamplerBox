@@ -25,7 +25,7 @@ You can use a ready-to-use ISO image from the [Releases](https://github.com/jose
     sudo apt -y install git python3-pip python3-smbus python3-numpy libportaudio2 
     sudo apt -y install raspberrypi-kernel  # quite long to install, do it only if necessary, it solves a "no sound before 25 second on boot" problem
     sudo pip3 install cython cffi sounddevice pyserial
-    sudo pip3 install git+https://github.com/SamplerBox/rtmidi-python.git     # now also works for Python3.9+ and Cython3
+    sudo pip3 install git+https://github.com/SamplerBox/rtmidi-python.git     # now also works for Python3.9+ and Cython3 ; for Windows, see below
     ~~~
     
 2. Download SamplerBox and build it with:
@@ -63,6 +63,13 @@ A few remarks:
 # ISO image
 
 The ready-to-use ISO images available on [www.samplerbox.org](https://www.samplerbox.org) are built with the help of a script that can be found in `isoimage/maker.sh`.
+
+# Other platforms
+
+* SamplerBox has been primarily made for Raspberry Pi / RaspiOS
+* It also works more generally on major Linux distributions
+* It also works on Windows, but you are a bit on your own ;)
+     Ex: to install the dependency `rtmidi-python`, you have to do: `pip install cython`, `git clone https://github.com/SamplerBox/rtmidi-python.git`, `cd rtmidi-python`, `python setup.py install`.
 
 # About
 

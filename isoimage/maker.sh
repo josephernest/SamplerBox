@@ -7,11 +7,15 @@
 # SamplerBox (https://www.samplerbox.org)
 # License: Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International (CC BY-NC-SA 4.0) (https://creativecommons.org/licenses/by-nc-sa/4.0/)
 
+export RASPIOS_URL="https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-05-28/2021-05-07-raspios-buster-armhf-lite.zip"
+export RASPIOS_COMPRESSED="2021-05-07-raspios-buster-armhf-lite.zip"
+export RASPIOS_IMG="2021-05-07-raspios-buster-armhf-lite.img"
+
 set -e  # exit immediately if a command exits with a non-zero status
 apt install -y kpartx parted zip
-[ ! -f "2021-05-07-raspios-buster-armhf-lite.zip" ] && wget https://downloads.raspberrypi.org/raspios_lite_armhf/images/raspios_lite_armhf-2021-05-28/2021-05-07-raspios-buster-armhf-lite.zip
-[ ! -f "2021-05-07-raspios-buster-armhf-lite.img" ] && unzip 2021-05-07-raspios-buster-armhf-lite.zip
-cp 2021-05-07-raspios-buster-armhf-lite.img sb.img
+[ ! -f "${RASPIOS_COMPRESSED}" ] && wget "${RASPIOS_URL}"
+[ ! -f "${RASPIOS_IMG}" ] && unzip "${RASPIOS_COMPRESSED}"
+cp "${RASPIOS_IMG}" sb.img
 truncate -s 2500M sb.img      # M=1024*1024
 kpartx -av sb.img
 parted -m /dev/loop0 resizepart 2 2499MiB  # MiB=1024*1024

@@ -384,13 +384,23 @@ else:
 
 if USE_SERIALPORT_MIDI:
     import serial
-    ser = serial.Serial(SERIALPORT_PORT, baudrate=SERIALPORT_BAUDRATE)
     def MidiSerialCallback():
         message = [0, 0, 0]
+        ser = None
         while True:
+            if ser is None:
+                try:
+                    ser = serial.Serial(SERIALPORT_PORT, baudrate=SERIALPORT_BAUDRATE)
+                except serial.serialutil.SerialException:
+                    continue
             i = 0
-            while i < 3:
-                data = ord(ser.read(1))  # read a byte
+            while i < 3 and ser is not None:
+                try:
+                    data = ord(ser.read(1))  # read a byte
+                except serial.serialutil.SerialException:
+                    ser = None
+                    message = [0, 0, 0]
+                    break
                 if data >> 7 != 0:
                     i = 0      # status byte!   this is the beginning of a midi message: http://www.midi.org/techspecs/midimessages.php
                 message[i] = data
